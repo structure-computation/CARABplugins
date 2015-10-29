@@ -59,7 +59,7 @@ class SiteData extends TreeItem
         bm4 = new MenuButtonItem "Softhub", "#softhub"
         
         link = new MenuLinkItem 
-            name: "CARAB Desk ->" 
+            name: "MECASIF Desk ->" 
             balise: 'login.html'
             color: @textColor.highlight
         
@@ -527,11 +527,9 @@ class SiteData extends TreeItem
                 
         @add_child softlist_mecanical
         
-         
-#         softlist_mecanical.add_child new Plot3DDemoItem
-#         softlist_mecanical.add_child new Plot3DDemoItem
-#         softlist_mecanical.add_child new Plot3DDemoItem
+
         softlist_mecanical.add_child new Plot3DDemoItem
+        softlist_mecanical.add_child new BrideICA2DemoItem
     
     
 #     add_contact_item: ()->

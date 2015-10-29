@@ -32,10 +32,10 @@ class IssimSoftPageData extends TreeItem
             balise_logo : '#presentation'
             
               
-            menu_background : "#262626 "
+            menu_background : "#ececec "
               
             backgroundColor :
-                first : "#262626"
+                first : "#ececec"
                 second : "#ffffff"
                 third : "#ececec"
                 separator : "#e6e6e6"
@@ -44,11 +44,11 @@ class IssimSoftPageData extends TreeItem
                 
             textColor :
                 first : "#262626"
-                second : "#f6f6f6"
+                second : "#262626"
                 highlight : "#4dbce9"
                 
             lineColor :
-                first : "1px solid #f6f6f6 "
+                first : "1px solid #262626 "
                 second : "1px solid #262626 "
                 highlight : "1px solid #4dbce9 "
             
@@ -56,18 +56,50 @@ class IssimSoftPageData extends TreeItem
           eval "var app = new #{ @demo_application };"
           @demo_app = app
         
-        console.log @demo_app
-        
         @run_test_2()
     
-
+    
     add_menu_item: () ->
+    
+#         menu = new SitePartItem 
+#                 name : 'menu'
+#                 type : 'menu'
+#                 src  : "img/Carab.png"
+#                 background : @backgroundColor.first
+#         @add_child menu
+#        
+#             
+#         #ajout de bouton au menu------------------------------------------------------------------------------------
+#         logo = new MenuCentralButtonItem '#presentation', "img/logo_spinalcom_120.png"
+#         
+#         bm0 = new MenuButtonItem "Présentation", '#presentation'
+#             color: @textColor.highlight
+#         bm1 = new MenuButtonItem "Consortium", '#consortium'
+#             color: @textColor.highlight
+#         bm2 = new MenuButtonItem "Work packages", '#work_packages'
+#             color: @textColor.highlight
+#         bm3 = new MenuButtonItem "News", '#news'
+#             color: @textColor.highlight
+#         bm4 = new MenuButtonItem "Softhub", "#softhub"
+#             color: @textColor.highlight
+#         
+       
+# #         
+#         menu.add_child logo
+#         menu.add_child bm0
+#         menu.add_child bm1
+#         menu.add_child bm2
+#         menu.add_child bm3
+#         menu.add_child bm4
+# #         menu.add_child link
+        
+    
         menu = new SitePartItem 
-            name : 'menu'
-            type : 'menu'
-#             src : "img/Carab.png"
-            display_big_logo : @display_big_logo.get()
-            background : @backgroundColor.third
+                name : 'menu'
+                type : 'menu'
+#                 src : "img/Carab.png"
+                display_big_logo : @display_big_logo.get()
+                background : @backgroundColor.third
         @add_child menu
         
         #ajout de bouton au menu------------------------------------------------------------------------------------
@@ -79,19 +111,25 @@ class IssimSoftPageData extends TreeItem
         bm2 = new MenuButtonItem "Publications", '#publication'
         bm3 = new MenuButtonItem "Tutorial", '#tutorial'
         bm4 = new MenuButtonItem "Editor", '#editor'
-        
         link = new MenuLinkItem 
-            name: "is-sim beta ->" 
-            balise: 'login.html'
+            name: "CARAB site ->" 
+            balise: 'index.html'
             color: @textColor.highlight
+#         bm5 = new MenuButtonItem "CARAB", 'http://localhost:8888/CARAB.html'
         
 #         menu.add_child logo
+        menu.add_child link
         menu.add_child bm0
+#         menu.add_child bm1
+#         menu.add_child bm2
+#         menu.add_child bm3
+#         menu.add_child bm4
+
+#         menu.add_child bm5
         if @demo_app.video_link? then menu.add_child bm1
         if @demo_app.publication_link? then menu.add_child bm2
         if @demo_app.tutorial_link? then menu.add_child bm3
         if @demo_app.editor_info? then menu.add_child bm4
-#         menu.add_child link
         
     
     
@@ -106,11 +144,8 @@ class IssimSoftPageData extends TreeItem
                 color : @textColor.first
         @add_child demo
         
-        demo_window = new SiteTextItem
-            txt: '<iframe src="softdemo.html#' + @demo_application  + '" width="1100" height="600" frameborder="0" style="border:0"></iframe>'
-#             txt : '<iframe></iframe>'
-            fontSize: "18px"
-            textAlign: "center"
+        demo_window = new IFrameItem
+            src : "softdemo.html#" + @demo_application
         demo.add_child demo_window 
         
         demo_window_text = new SiteTextItem

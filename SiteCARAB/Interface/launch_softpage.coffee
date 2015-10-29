@@ -20,8 +20,7 @@ launch_softpage = ( main = document.body ) ->
     bs = new BrowserState
     hash = bs.location.hash.get()
     if hash.length > 1
-        path = decodeURIComponent hash.slice 1
-        console.log path
+        demo_item_string = decodeURIComponent hash.slice 1
         
     else 
         alert "erreur"
@@ -29,7 +28,7 @@ launch_softpage = ( main = document.body ) ->
     soft_demo_data = new IssimSoftPageData
         name        : "is-sim Demo"
         project_name: "is-sim Demo"
-        demo_application: path
+        demo_application: demo_item_string
         display_big_logo : false
     
     softdemo_view = new SpinalComSiteView main, soft_demo_data
