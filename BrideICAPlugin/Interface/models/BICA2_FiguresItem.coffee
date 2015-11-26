@@ -12,7 +12,7 @@ class BICA2_FiguresItem extends BICA_Base
         @_viewable.set false
           
         @add_attr
-            Amplification_deplacement : params.figures.Amplification_deplacement
+            Amplification_deplacement : if params?.figures?.Amplification_deplacement? then params.figures.Amplification_deplacement else 1
             
     accept_child: ( ch ) ->
         false # AppItem

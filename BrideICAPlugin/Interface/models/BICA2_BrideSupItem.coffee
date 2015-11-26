@@ -5,21 +5,21 @@
 
 
 class BICA2_BrideSupItem extends BICA_Base
-    constructor: ( name = "Bride Superieur", params = {} ) ->
+    constructor: ( name = "Bride Superieur", params ) ->
         super()
 
         @_name.set name
         @_viewable.set true
           
         @add_attr
-            D_ext_plaque : params.bridesup.D_ext_plaque
-            D_int_plaque : params.bridesup.D_int_plaque
-            h_plaque : params.bridesup.h_plaque
-            D_ext_tube : params.bridesup.D_ext_tube                                            # Se referer aux commentaires de BICA2_BoulonItem
-            D_int_tube : params.bridesup.D_int_tube
-            h_tube_incline : params.bridesup.h_tube_incline
-            angle_tube_incline : params.bridesup.angle_tube_incline
-            h_tube : params.bridesup.h_tube
+            D_ext_plaque :      if  params?.bridesup?.D_ext_plaque? then params.bridesup.D_ext_plaque else 86
+            D_int_plaque :      if  params?.bridesup?.D_int_plaque? then params.bridesup.D_int_plaque else 57
+            h_plaque :          if  params?.bridesup?.h_plaque? then params.bridesup.h_plaque else 3
+            D_ext_tube :        if  params?.bridesup?.D_ext_tube? then params.bridesup.D_ext_tube else 61
+            D_int_tube :        if  params?.bridesup?.D_int_tube? then params.bridesup.D_int_tube else 57.1
+            h_tube_incline :    if  params?.bridesup?.h_tube_incline? then params.bridesup.h_tube_incline else 60
+            angle_tube_incline :if  params?.bridesup?.angle_tube_incline? then params.bridesup.angle_tube_incline else 0
+            h_tube :            if  params?.bridesup?.h_tube? then params.bridesup.h_tube else 56
             mesh: new Mesh( not_editable: true )
             mesh_droite: new Mesh( not_editable: true )
             mesh_incline: new Mesh( not_editable: true )

@@ -12,16 +12,16 @@ class BICA2_BoulonItem extends BICA_Base
         @_viewable.set true
           
         @add_attr                                                               # Rappel des Variable de BrideICA2Item
-            diametre_nominal : params.boulon.diametre_nominal
-            diametre_tete : params.boulon.diametre_tete
-            diametre_implantation : params.boulon.diametre_implantation
-            longueur_filetee : params.boulon.longueur_filetee
-            longueur_non_filetee : params.boulon.longueur_non_filetee
-            nombre_de_fixations : params.boulon.nombre_de_fixations
-            diametre_trou_passage : params.boulon.diametre_trou_passage
-            _bridesup_h_plaque: params.bridesup.h_plaque
-            _brideinf_h_plaque: params.brideinf.h_plaque
-            hauteur_tete : params.boulon.hauteur_tete
+            diametre_nominal :          if  params?.boulon?.diametre_nominal? then params.boulon.diametre_nominal else 5
+            diametre_tete :             if  params?.boulon?.diametre_tete? then params.boulon.diametre_tete else 8.3
+            diametre_implantation :     if  params?.boulon?.diametre_implantation? then params.boulon.diametre_implantation else 74
+            longueur_filetee :          if  params?.boulon?.longueur_filetee? then params.boulon.longueur_filetee else 0
+            longueur_non_filetee :      if  params?.boulon?.longueur_non_filetee? then params.boulon.longueur_non_filetee else 6
+            nombre_de_fixations :       if  params?.boulon?.nombre_de_fixations? then params.boulon.nombre_de_fixations else 20
+            diametre_trou_passage :     if  params?.boulon?.diametre_trou_passage? then params.boulon.diametre_trou_passage else 5.4
+            _bridesup_h_plaque:         if  params?.bridesup?.h_plaque? then params.bridesup.h_plaque else 3
+            _brideinf_h_plaque:         if  params?.brideinf?.h_plaque? then params.brideinf.h_plaque else 3
+            hauteur_tete :              if  params?.boulon?.hauteur_tete? then params.boulon.hauteur_tete else 5
             
             mesh_tete: new Mesh( not_editable: true )                 #
             mesh_ecrou: new Mesh( not_editable: true )                #
