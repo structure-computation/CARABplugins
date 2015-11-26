@@ -12,12 +12,12 @@ class BICA2_MateriauxItem extends BICA_Base
         @_viewable.set false
           
         @add_attr
-            E_bride_sup : params.materiaux.E_bride_sup
-            poisson_bride_sup :params.materiaux.poisson_bride_sup
-            E_bride_inf :params.materiaux.E_bride_inf
-            poisson_bride_inf :params.materiaux.poisson_bride_inf
-            E_fixation :params.materiaux.E_fixation
-            poisson_fixation :params.materiaux.poisson_fixation
+            E_bride_sup :       if params?.materiaux?.E_bride_sup? then params.materiaux.E_bride_sup else 205000
+            poisson_bride_sup : if params?.materiaux?.poisson_bride_sup? then params.materiaux.poisson_bride_sup else 0.3
+            E_bride_inf :       if params?.materiaux?.E_bride_inf? then params.materiaux.E_bride_inf else 205000
+            poisson_bride_inf : if params?.materiaux?.poisson_bride_inf? then params.materiaux.poisson_bride_inf else 0.3
+            E_fixation :        if params?.materiaux?.E_fixation? then params.materiaux.E_fixation else 205000
+            poisson_fixation :  if params?.materiaux?.poisson_fixation? then params.materiaux.poisson_fixation else 0.3
             
     accept_child: ( ch ) ->
         false # AppItem

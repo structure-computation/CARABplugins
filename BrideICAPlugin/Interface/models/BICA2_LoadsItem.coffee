@@ -12,9 +12,9 @@ class BICA2_LoadsItem extends BICA_Base
         @_viewable.set false
           
         @add_attr
-            Precharge : params.chargement.Precharge
-            Fe_tension : params.chargement.Fe_tension
-            Pas_de_chargement : params.chargement.Pas_de_chargement
+            Precharge :  if params?.chargement?.Precharge? then params.chargement.Precharge else 4100
+            Fe_tension :   if params?.chargement?.Fe_tension? then params.chargement.Fe_tension else 10000
+            Pas_de_chargement :  if params?.chargement?.Pas_de_chargement? then params.chargement.Pas_de_chargement else 5
             
     accept_child: ( ch ) ->
         false # AppItem

@@ -12,8 +12,8 @@ class BICA2_MaillagePourMatlabItem extends BICA_Base
         @_viewable.set false
           
         @add_attr
-            Taille_maillage_bride : params.maillage.Taille_maillage_bride
-            Taille_maillage_virole : params.maillage.Taille_maillage_virole
+            Taille_maillage_bride : if params?.maillage?.Taille_maillage_bride? then params.maillage.Taille_maillage_bride else 1
+            Taille_maillage_virole :  if params?.maillage?.Taille_maillage_virole? then params.maillage.Taille_maillage_virole else 5
             
     accept_child: ( ch ) ->
         false # AppItem
