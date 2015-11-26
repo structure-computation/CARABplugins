@@ -70,28 +70,30 @@ class BrideICACalculContact extends TreeItem
                     contact.push {}
                     contact[i - 1].noeudmaitre = k
                     contact[i - 1].noeudesclave = j
+        contact_length = contact.length
+#         console.log contact_length
         switch calage_contact
             when 1
                 sp_contact = Crep * sptotale
                 raideur_contact = 1 / sp_contact
-                rayon_externe = noeudprimb[contact[contact.length - 1].noeudmaitre].r
+                rayon_externe = noeudprimb[contact[contact_length - 1].noeudmaitre].r
                 rayon_interne = noeudprimb[contact[0].noeudmaitre].r
                 surf_contact = Math.PI * ( rayon_externe * rayon_externe ) / nombredefixation - Math.PI * ( rayon_interne * rayon_interne ) / nombredefixation
                 
-                k_contact = math.zeros(1, contact.length)
+                k_contact = math.zeros(1, contact_length)
                 
-                for i in [ 1 .. contact.length - 2 ]
+                for i in [ 1 .. contact_length - 1 ]
                     r_int = noeudprimb[contact[i - 1].noeudmaitre].r
                     r_ext = noeudprimb[contact[i].noeudmaitre].r
                     surf[i - 1] = Math.PI * ( r_ext * r_ext - r_int * r_int ) / nombredefixation
                     k_contact[i - 1] = k_contact[i - 1] + 0.5 * raideur_contact * surf[i - 1] / surf_contact
                     k_contact[i] = k_contact[i] + 0.5 * raideur_contact * sur[i - 1] / surf_contact
-                    console.log "switch case 1"
+#                     console.log "switch case 1"
                 
             when 0
-                k_contact = math.zeros(1, contact.length)
-                console.log "test = " + math.zeros(2, 3)
-                for i in [ 1 .. contact.length - 2 ]
+                k_contact = math.zeros(1, contact_length)
+                console.log "k_contact = " + k_contact
+                for i in [ 1 .. contact_length - 1 ]
                     r_int = noeudprimb[contact[i - 1].noeudmaitre].r
                     r_ext = noeudprimb[contact[i].noeudmaitre].r
                     if ( Math.abs(0.5 * di - 0.5 * ( r_int + r_ext ) ) < 0.5 * dt )
@@ -105,10 +107,18 @@ class BrideICACalculContact extends TreeItem
                     k_contact[i - 1] = k_contact[i - 1] + 0.5 * contact_eq
                     k_contact[i] = k_contact[i] + 0.5 * contact_eq
                 sp_contact = 1 / @add_in_lst(k_contact)
-                console.log "switch case 0"
-        console.log k_contact
-        console.log sp_contact
-        console.log contact
+                console.log r_ext - r_int
+                console.log Math.abs(r_ext - r_int)
+                console.log "r_int = " + r_int
+                console.log "r_ext = " + r_ext
+                console.log "ep_vide = " + ep_vide
+                console.log "A = " + A
+                
+
+#                 console.log "switch case 0"
+#         console.log k_contact
+#         console.log sp_contact
+#         console.log contact
                 
                 
                 
