@@ -21,7 +21,7 @@ class BrideICASouplesseLGMT extends Model
         di = @param.di
         Da = @param.Da
         Angle_sect = @param.Angle_sect
-        H_s = @param.H_serree
+        H_serree = @param.H_serree
         
         
         
@@ -30,7 +30,7 @@ class BrideICASouplesseLGMT extends Model
         ri = 0.5 * di
         Angle_sect = 0.5 * Angle_sect
         Perimetre = Angle_sect * ( R_ext_contact + R_int_contact ) + ( R_ext_contact - R_int_contact )
-        
+        H_s = 2 * H_serree
 
         
         
@@ -40,7 +40,7 @@ class BrideICASouplesseLGMT extends Model
         @Ap_support.set 0
         somme_sect = 0
         somme_cdg = 0
-
+        
 
 #----------------------------------------------------------------- CALCUL POUR LA ZONE 1 ------------------------------------------------------------------------------
        

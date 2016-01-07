@@ -12,7 +12,8 @@ class BrideICA2ComputeItem extends TreeItem
 #       Création des variables en appelant les différentes Classes (BrideICA2Item ayant toutes les variable)
         geometrie = new BrideICA2Item
 #       On met en paramètre le paramètre geometrie qui contient donc toutes les variables utiles pour ces Classes
-
+        @add_attr
+            in_progress : false
 #         
 #       Ajout des enfants
         @add_child geometrie
@@ -34,21 +35,46 @@ class BrideICA2ComputeItem extends TreeItem
 #             ico: "img/picto_play_souplesse.png"
 #             fun: ( evt, app ) =>
 #                 @calcul_souplesse()
+        
         context_action.push
-            txt: "calcul du Maillage"
+            txt: "Lancement du calcul"
             ico: "img/picto_play_maillage.png"
             fun: ( evt, app ) =>
+#                 for i in [ @_children.length - 1 .. 1]
+#                     if @_children[i]?
+#                         @rem_child @_children[i]  
                 @calcul_donnees()
                 @calcul_reglages()
                 @calcul_souplesse()
                 @calcul_maillage( app )
-                
-
+                @calcul_calcul_contact()
+                @calcul_assemblage()
+        
         context_action.push
-            txt: "calcul de la souplesse"
+            txt: "Suppression du calcul en cours"
+            ico: "img/picto_play_maillage.png"
+            fun: ( evt, app ) =>
+                size = @_children.length
+                for i in [ 1 .. size - 1 ]
+                    if @_children[(size - i)]?
+                        @rem_child @_children[(size - i)]
+
+        
+        context_action.push
+            txt: "affichage des graph"
             ico: "img/picto_play_souplesse.png"
             fun: ( evt, app ) =>
-                @calcul_calcul_contact()
+                for child in @_children
+                    if child instanceof BrideICAMaillage
+                        child.plot_maillage app
+                        
+
+#         context_action.push
+#             txt: "calcul de la souplesse"
+#             ico: "img/picto_play_souplesse.png"
+#             fun: ( evt, app ) =>
+#                 @calcul_calcul_contact()
+#                 @calcul_assemblage()
 
                 
     calcul_donnees: ( )  ->
@@ -66,6 +92,11 @@ class BrideICA2ComputeItem extends TreeItem
     calcul_maillage: ( app )  ->
         maillage = new BrideICAMaillage @_children, app
         @add_child maillage
+    
     calcul_calcul_contact: ( ) ->
         calcul_contact = new BrideICACalculContact @_children
         @add_child calcul_contact
+        
+    calcul_assemblage: ( ) ->
+        assemblage = new BrideICAAssemblage @_children
+        @add_child assemblage

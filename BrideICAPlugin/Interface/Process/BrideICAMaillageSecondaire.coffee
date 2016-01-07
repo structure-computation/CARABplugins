@@ -64,6 +64,7 @@ class BrideICAMaillageSecondaire extends Model
         taille_secondaire = @param.taille_secondaire
         taille_secondaire_plaque = @param.taille_secondaire_plaque
         epaisseur_tube_incline1 = Math.abs( ( D_ext_tube1 - D_int_tube1 ) * Math.cos( angle_tube_incline1 * Math.PI / 180 ) / 2 )
+#         console.log "angle_tube_incline1 = " + angle_tube_incline1                                   
         if ( @strcmp(string, "sup") )
             noeud.push {}
             elem.push {}
@@ -90,7 +91,6 @@ class BrideICAMaillageSecondaire extends Model
                     elem[x - 1].type = 1
                     elem[x - 1].geom1 = noeud[w - 1].r
                     elem[x - 1].geom2 = noeud[w - 2].r
-                    
                     if ( ( dt * dt / 4 ) - Math.pow( ( ( noeud[w - 1].r + noeud[w - 2].r) / 2 - di / 2 ), 2 ) > 0 )
                         numeps = Math.pow( ( Math.pow( ( 0.5 * dt ), 2) - Math.pow( ( ( ( noeud[w - 1].r + noeud[w - 2].r ) / 2 ) - ( 0.5 * di ) ), 2 ) ), 0.5 )
                         denumeps = 0.5 * Angle_sect * ( ( noeud[w - 1].r + noeud[w - 2].r ) / 2 )
@@ -114,7 +114,6 @@ class BrideICAMaillageSecondaire extends Model
                         elem[x - 1].type = 1
                         elem[x - 1].geom1 = noeud[w - 2].r
                         elem[x - 1].geom2 = noeud[w - 1].r
-                        
                         if ( ( dt * dt / 4 ) - Math.pow( ( ( noeud[w - 1].r + noeud[w - 2].r) / 2 - di / 2 ), 2 ) > 0 )
                             
                             numeps = Math.pow( ( Math.pow( ( 0.5 * dt ), 2) - Math.pow( ( ( ( noeud[w - 1].r + noeud[w - 2].r ) / 2 ) - ( 0.5 * di ) ), 2 ) ), 0.5 )
@@ -146,6 +145,7 @@ class BrideICAMaillageSecondaire extends Model
                 w = w + 1
                 noeud.push {}
                 elem.push {}
+                
                 noeud[w - 1].r = bride_sup[d1 - 1].r
                 noeud[w - 1].z = bride_sup[d1 - 1].z
                 x = x + 1
@@ -336,18 +336,7 @@ class BrideICAMaillageSecondaire extends Model
             @wf.set wf
             @wpression1.set wpression1
             @wpression2.set wpression2
-#             console.log @elem
-#             console.log @noeud
-#             console.log "w = " + @w
-#             console.log "x = " + @x
-#             console.log "wa = " + @wa
-#             console.log "wb = " + @wb
-#             console.log "wc = " + @wc
-#             console.log "wd = " + @wd
-#             console.log "we = " + @we
-#             console.log "wf = " + @wf
-#             console.log "wpression1 = " + @wpression1
-#             console.log "wpression2 = " + @wpression2
+
         else if ( @strcmp(string, "inf") )
             noeud.push {}
             elem.push {}
@@ -362,6 +351,7 @@ class BrideICAMaillageSecondaire extends Model
                     nombre_elements = Math.round(taille_globale / taille_secondaire_plaque )
                 if ( nombre_elements == 1 )
                     w = w + 1
+                    
                     noeud.push {}
                     elem.push {}
                     noeud[w - 1].r = bride_sup[i - 1].r
@@ -387,6 +377,7 @@ class BrideICAMaillageSecondaire extends Model
                         w = ww
                         noeud.push {}
                         elem.push {}
+#                         console.log "w = " + w
                         noeud[w - 1].r = noeud[w - 2].r + taille_globale / nombre_elements                      
                         noeud[w - 1].z = noeud[w - 2].z
                         x = x + 1
@@ -419,6 +410,7 @@ class BrideICAMaillageSecondaire extends Model
                 else if ( ( bride_sup[i - 1].r == D_int_base_tube_incline1 / 2 ) and ( bride_sup[i - 1].z == 0 ) )
                     wpression1 = w                   
             wb = noeud.length
+#             console.log bride_sup[d1-1].z
             taille_globale = Math.abs( bride_sup[d1 - 1].z - bride_sup[c1 - 1].z )
             if ( taille_globale < taille_secondaire )
                 nombre_elements = 1
@@ -428,8 +420,11 @@ class BrideICAMaillageSecondaire extends Model
                 w = w + 1
                 noeud.push {}
                 elem.push {}
+#                 console.log "w = " + w                
                 noeud[w - 1].r = bride_sup[d1 - 1].r
                 noeud[w - 1].z = bride_sup[d1 - 1].z
+#                 console.log noeud[w - 1].r
+#                 console.log noeud[w - 1].z
                 x = x + 1
                 elem[x - 1].noeud1 = wc
                 elem[x - 1].noeud2 = w
@@ -557,6 +552,10 @@ class BrideICAMaillageSecondaire extends Model
                     elem.push {}
                     noeud[w - 1].r = noeud[w - 2].r - taille_r / nombre_elements
                     noeud[w - 1].z = noeud[w - 2].z - taille_z / nombre_elements
+#                     console.log "w = " + w
+                    
+#                     console.log "r = " + noeud[w - 1].r
+#                     console.log "z = " + noeud[w - 1].z
                     x = x + 1
                     elem[x - 1].noeud1 = w - 1
                     elem[x - 1].noeud2 = w
@@ -619,18 +618,8 @@ class BrideICAMaillageSecondaire extends Model
             @wpression1.set wpression1
             @wpression2.set wpression2
             
-#             console.log @elem
-#             console.log @noeud
-#             console.log "w = " + @w
-#             console.log "x = " + @x
-#             console.log "wa = " + @wa
-#             console.log "wb = " + @wb
-#             console.log "wc = " + @wc
-#             console.log "wd = " + @wd
-#             console.log "we = " + @we
-#             console.log "wf = " + @wf
-#             console.log "wpression1 = " + @wpression1
-#             console.log "wpression2 = " + @wpression2      
+#         console.log @elem
+    
                     
                     
                     

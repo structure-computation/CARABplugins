@@ -11,12 +11,30 @@ class BrideICAMaillage extends TreeItem
         
         @add_attr
             noeud : 0
+            elem : 0
             wa1 : 0
             wa2 : 0
             wb1 : 0
             wb2 : 0
-        
-        @calcul_maillage( app )
+            wc1 : 0
+            wc2 : 0
+            wd1 : 0
+            wd2 : 0
+            we1 : 0
+            we2 : 0
+            wf1 : 0
+            wf2 : 0
+            wsup : 0
+            winf : 0
+            wpression11 : 0
+            wpression12 : 0
+            wpression21 : 0
+            wpression22 : 0
+            _bride_sup : new Lst 
+            _bride_inf : new Lst 
+            
+        if @bride_children?
+            @calcul_maillage( app )
     
     
     lst_mult_lst: ( lst_1, lst_2 ) ->    
@@ -28,7 +46,7 @@ class BrideICAMaillage extends TreeItem
                 lst_3.push mult
             return lst_3
         else
-            console.log "Les deux array n'ont pas la même taille"
+            console.log "Les deux array n'ont pas la meme taille"
  
  
     lst_mult_val: ( lst, val ) ->    
@@ -54,7 +72,7 @@ class BrideICAMaillage extends TreeItem
                 lst_3.push (0 + ( lst_1[i] == lst_2[i] ))
             return lst_3
         else
-            console.log "Les deux array n'ont pas la même taille"
+            console.log "Les deux array n'ont pas la meme taille"
   
     
     lst_sort: ( lst ) ->
@@ -116,9 +134,9 @@ class BrideICAMaillage extends TreeItem
 #définition des variables ----------------------------------------------------------------------------------------------------------------------
         A = [1, 2, 3, 4, 5]
         ones_1_5 = [1, 1, 1, 1, 1]
-        maillage_bride = @bride_children[0].parameters.maillage.Taille_maillage_bride.get()
-        maillage_virole = @bride_children[0].parameters.maillage.Taille_maillage_virole.get()
-        sp = @bride_children[3].sptotale.get()
+        maillage_bride = @bride_children[0].maillage.Taille_maillage_bride.get()
+        maillage_virole = @bride_children[0].maillage.Taille_maillage_virole.get()
+        sp = @bride_children[3].sp
         nu_fixation = @bride_children[1].nu_fixation.get()
         E_fixation = @bride_children[1].E_fixation.get()
         Ie = @bride_children[3].Ie.get()
@@ -204,7 +222,8 @@ class BrideICAMaillage extends TreeItem
         bride_inf[1].nom = "plaque_inf_coin_interieur"
         bride_inf[1].couleur = "bleu"
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
-
+#         console.log "D_int_base_tube_incline1 = " + D_int_base_tube_incline1
+#         console.log "D_int_base_tube_incline2 = " + D_int_base_tube_incline2
 #       Connections tuyaux
 
         dbase1 = ( D_int_base_tube_incline1 + D_ext_base_tube_incline1 ) / 2
@@ -263,8 +282,8 @@ class BrideICAMaillage extends TreeItem
 # opposé 'et' aucun point de la plaque opposée ne doit cohincider au moment
 # de la projection. Toujours le meme test.
 
-        N_bride_sup = 5
-        N_bride_inf = 5
+        @N_bride_sup = 5
+        @N_bride_inf = 5
         
 # Projection SUP/INF puis INF/SUP
         
@@ -278,46 +297,65 @@ class BrideICAMaillage extends TreeItem
             bride_inf_r.push bride_inf[k].r
             bride_sup_z.push bride_sup[k].z
             bride_inf_z.push bride_inf[k].z
-               
+#         console.log "D_int_plaque2 = " + D_int_plaque2
+#         console.log " = " + 
+#         console.log "D_ext_plaque2 = " + D_ext_plaque2
+#         console.log " = " + 
+#         console.log "D_int_plaque1 = " + D_int_plaque1
+#         console.log " = " + 
+#         console.log "D_ext_plaque1 = " + D_ext_plaque1
+        
         for i in [ 0 .. 4 ]
+#             console.log "bride_sup[i].r = " + bride_sup[i].r
+#             console.log "bride_inf[i].r = " + bride_inf[i].r
             if ( ( 0.5 * D_int_plaque2 ) < bride_sup[i].r and bride_sup[i].r < ( 0.5 * D_ext_plaque2 ) )    # On vérifie qu'il existe bien une projection
+                
                 bride_sup_r_ones = @lst_mult_val(ones_1_5, bride_sup_r[i])
                 compare = @lst_compar(bride_sup_r_ones, bride_inf_r)
                 compare_mult = @lst_mult_lst(compare, A)
                 testindice = @add_in_lst(compare_mult)
                 if ( testindice != 0 ) 
+#                     console.log "je passe dans le bon if"
                     nomtmp = bride_inf[testindice - 1].nom
                     bride_inf[testindice - 1].nom = ( bride_inf[testindice - 1].nom + " + projection_sup/inf de : " + bride_sup[i].nom )
                     bride_sup[i].nom = ( bride_sup[i].nom + " + projection_inf/sup : " + nomtmp )
                 else
-                    bride_inf = N_bride_inf + 1
-                    bride_inf[N_bride_inf - 1].r = bride_sup[i].r
-                    bride_inf[N_bride_inf - 1].z = 0
-                    bride_inf[N_bride_inf - 1].nom = ( "projection_sup/inf de :" + bride_sup[i].nom )
-                    bride_inf[N_bride_inf - 1].couleur = "bleu"
+#                     console.log "je passe dans le else"
+                    @N_bride_inf = @N_bride_inf + 1
+                    bride_inf.push {}
+                    bride_inf[@N_bride_inf - 1].r = bride_sup[i].r
+                    bride_inf[@N_bride_inf - 1].z = 0
+                    bride_inf[@N_bride_inf - 1].nom = ( "projection_sup/inf de :" + bride_sup[i].nom )
+                    bride_inf[@N_bride_inf - 1].couleur = "bleu"
             
             if ( ( 0.5 * D_int_plaque1 ) < bride_inf[i].r and bride_inf[i].r < ( 0.5 * D_ext_plaque1 ) )
+#                 console.log "je passe dans le mauvais if"
                 bride_inf_r_ones = @lst_mult_val(ones_1_5, bride_inf_r[i])
                 compare = @lst_compar(bride_inf_r_ones, bride_sup_r)
                 compare_mult = @lst_mult_lst(compare, A)
                 testindice = @add_in_lst(compare_mult)
 #                 console.log "testindice = " + testindice
                 if ( testindice == 0 )
-                    N_bride_sup = N_bride_sup + 1
-                    bride_sup[N_bride_sup - 1].r = bride_inf[i].r
-                    bride_sup[N_bride_sup - 1].z = 0
-                    bride_sup[N_bride_sup - 1].nom = ( "projection_inf/sup de : " + bride_inf[i].nom )
-                    bride_sup[N_bride_sup - 1].couleur = "rouge"
+                    @N_bride_sup = @N_bride_sup + 1
+                    bride_sup.push {}
+                    bride_sup[@N_bride_sup - 1].r = bride_inf[i].r
+                    bride_sup[@N_bride_sup - 1].z = 0
+                    bride_sup[@N_bride_sup - 1].nom = ( "projection_inf/sup de : " + bride_inf[i].nom )
+                    bride_sup[@N_bride_sup - 1].couleur = "rouge"
 
-#       A ce stade on trie la structure par indexe croissant
+#         console.log bride_sup
+#         console.log bride_inf
+# A ce stade on trie la structure par indexe croissant
 #       il faut donc imaginer que l'indexage sur la plaque est
 #       croissant de gauche à droite            
         
         bride_sup_r_cpy = bride_sup_r.slice()
         bride_sup_r_sort = @lst_sort(bride_sup_r)
         sort_index_sup = @lst_sort_index(bride_sup_r_cpy, bride_sup_r_sort)      
+#         console.log bride_sup_r_cpy
+#         console.log bride_sup
         bride_sup = @lst_sort_to_index(bride_sup, sort_index_sup)
-        
+      
         bride_inf_r_cpy = bride_inf_r.slice()
         bride_inf_r_sort = @lst_sort(bride_inf_r)
         sort_index_inf = @lst_sort_index(bride_inf_r_cpy, bride_inf_r_sort)      
@@ -327,89 +365,90 @@ class BrideICAMaillage extends TreeItem
   
 # Haut de lelemnt hybride
 
-        N_bride_sup = N_bride_sup + 1
-        N_bride_inf = N_bride_inf + 1
+        @N_bride_sup = @N_bride_sup + 1
+        @N_bride_inf = @N_bride_inf + 1
+#         console.log @N_bride_inf
         bride_sup.push {}
-        bride_sup[N_bride_sup - 1].r = r_moyen1
-        bride_sup[N_bride_sup - 1].z = h_plaque1 / 2
-        bride_sup[N_bride_sup - 1].nom = "Haut de lelement hybride"
-        bride_sup[N_bride_sup - 1].couleur = "rouge"
+        bride_sup[@N_bride_sup - 1].r = r_moyen1
+        bride_sup[@N_bride_sup - 1].z = h_plaque1 / 2
+        bride_sup[@N_bride_sup - 1].nom = "Haut de lelement hybride"
+        bride_sup[@N_bride_sup - 1].couleur = "rouge"
         bride_inf.push {}
-        bride_inf[N_bride_inf - 1].r = r_moyen2
-        bride_inf[N_bride_inf - 1].z = h_plaque2 / 2
-        bride_inf[N_bride_inf - 1].nom = "Haut de lelement hybride"
-        bride_inf[N_bride_inf - 1].couleur = "bleu"
+        bride_inf[@N_bride_inf - 1].r = r_moyen2
+        bride_inf[@N_bride_inf - 1].z = -h_plaque2 / 2
+        bride_inf[@N_bride_inf - 1].nom = "Haut de lelement hybride"
+        bride_inf[@N_bride_inf - 1].couleur = "bleu"
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #   
 
 # Plaque coin interieur 2
-        N_bride_sup = N_bride_sup + 1
-        N_bride_inf = N_bride_inf + 1
+        @N_bride_sup = @N_bride_sup + 1
+        @N_bride_inf = @N_bride_inf + 1
         bride_sup.push {}
-        bride_sup[N_bride_sup - 1].r = dbase1 / 2
-        bride_sup[N_bride_sup - 1].z = h_plaque1 / 2
-        bride_sup[N_bride_sup - 1].nom = "plaque_sup_coin_interieur2"
-        bride_sup[N_bride_sup - 1].couleur = "rouge"
+        bride_sup[@N_bride_sup - 1].r = dbase1 / 2
+        bride_sup[@N_bride_sup - 1].z = h_plaque1 / 2
+        bride_sup[@N_bride_sup - 1].nom = "plaque_sup_coin_interieur2"
+        bride_sup[@N_bride_sup - 1].couleur = "rouge"
         bride_inf.push {}
-        bride_inf[N_bride_inf - 1].r = dbase2 / 2
-        bride_inf[N_bride_inf - 1].z = h_plaque2 / 2
-        bride_inf[N_bride_inf - 1].nom = "plaque_inf_coin_interieur2"
-        bride_inf[N_bride_inf - 1].couleur = "bleu"
+        bride_inf[@N_bride_inf - 1].r = dbase2 / 2
+        bride_inf[@N_bride_inf - 1].z = -h_plaque2 / 2
+        bride_inf[@N_bride_inf - 1].nom = "plaque_inf_coin_interieur2"
+        bride_inf[@N_bride_inf - 1].couleur = "bleu"
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
 
 # Jonction_tube_incline_tube
         d1 = ( D_int_tube1 + D_ext_tube1 ) / 2
         d2 = ( D_int_tube2 + D_ext_tube2 ) / 2
         
-        N_bride_sup = N_bride_sup + 1
-        N_bride_inf = N_bride_inf + 1
+        @N_bride_sup = @N_bride_sup + 1
+        @N_bride_inf = @N_bride_inf + 1
         bride_sup.push {}
-        bride_sup[N_bride_sup - 1].r = 0.5 * d1
-        bride_sup[N_bride_sup - 1].z = h_tube_incline1 + 0.5 * h_plaque1
-        bride_sup[N_bride_sup - 1].nom = "Jonction_tube_incline_tube"
-        bride_sup[N_bride_sup - 1].couleur = "rouge"
+        bride_sup[@N_bride_sup - 1].r = 0.5 * d1
+        bride_sup[@N_bride_sup - 1].z = h_tube_incline1 + 0.5 * h_plaque1
+        bride_sup[@N_bride_sup - 1].nom = "Jonction_tube_incline_tube"
+        bride_sup[@N_bride_sup - 1].couleur = "rouge"
         bride_inf.push {}
-        bride_inf[N_bride_inf - 1].r = 0.5 * d2
-        bride_inf[N_bride_inf - 1].z = - ( h_tube_incline2 + 0.5 * h_plaque2 )
-        bride_inf[N_bride_inf - 1].nom = "jonction_tube_incline_tube"
-        bride_inf[N_bride_inf - 1].couleur = "bleu"
+        bride_inf[@N_bride_inf - 1].r = 0.5 * d2
+        bride_inf[@N_bride_inf - 1].z = - ( h_tube_incline2 + 0.5 * h_plaque2 )
+        bride_inf[@N_bride_inf - 1].nom = "jonction_tube_incline_tube"
+        bride_inf[@N_bride_inf - 1].couleur = "bleu"
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #      
 
 # Fin tube
         d1 = ( D_int_tube1 + D_ext_tube1 ) / 2
         d2 = ( D_int_tube2 + D_ext_tube2 ) / 2
         
-        N_bride_sup = N_bride_sup + 1
-        N_bride_inf = N_bride_inf + 1
+        @N_bride_sup = @N_bride_sup + 1
+        @N_bride_inf = @N_bride_inf + 1
         bride_sup.push {}
-        bride_sup[N_bride_sup - 1].r = 0.5 * d1
-        bride_sup[N_bride_sup - 1].z = h_tube_incline1 + 0.5 * h_plaque1 + h_tube1
-        bride_sup[N_bride_sup - 1].nom = "Fin_tube_sup"
-        bride_sup[N_bride_sup - 1].couleur = "rouge"
+        bride_sup[@N_bride_sup - 1].r = 0.5 * d1
+        bride_sup[@N_bride_sup - 1].z = h_tube_incline1 + 0.5 * h_plaque1 + h_tube1
+        bride_sup[@N_bride_sup - 1].nom = "Fin_tube_sup"
+        bride_sup[@N_bride_sup - 1].couleur = "rouge"
         bride_inf.push {}
-        bride_inf[N_bride_inf - 1].r = 0.5 * d2
-        bride_inf[N_bride_inf - 1].z = - ( h_tube_incline2 + 0.5 * h_plaque2 + h_tube2 )
-        bride_inf[N_bride_inf - 1].nom = "Fin_tube_inf"
-        bride_inf[N_bride_inf - 1].couleur = "bleu"
+        bride_inf[@N_bride_inf - 1].r = 0.5 * d2
+        bride_inf[@N_bride_inf - 1].z = - ( h_tube_incline2 + 0.5 * h_plaque2 + h_tube2 )
+        bride_inf[@N_bride_inf - 1].nom = "Fin_tube_inf"
+        bride_inf[@N_bride_inf - 1].couleur = "bleu"
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # definition des noeuds principaux de la vis
 # On va definir les noeuds selon l orientation de mon element de fixation
 
-        vis = []
+        @vis = []
 # # # # # # # # # # # # #         
-        vis.push {}
-        vis[0].r = 0.5 * di
-        vis[0].z = h_plaque1
-        vis[0].nom = "V1"
-        vis[0].couleur = "rose"
+        @vis.push {}
+        @vis[0].r = 0.5 * di
+        @vis[0].z = h_plaque1
+        @vis[0].nom = "V1"
+        @vis[0].couleur = "rose"
 # # # # # # # # # # # # #
 
 # # # # # # # # # # # # # 
-        vis.push {}
-        vis[1].r = 0.5 * di
-        vis[1].z = - h_plaque2
-        vis[1].nom = "V2"
-        vis[1].couleur = "rose"
+        @vis.push {}
+        @vis[1].r = 0.5 * di
+        @vis[1].z = - h_plaque2
+        @vis[1].nom = "V2"
+        @vis[1].couleur = "rose"
 # # # # # # # # # # # # #         
 
         N_vis = 2
@@ -424,35 +463,35 @@ class BrideICAMaillage extends TreeItem
 
 #----------------------------------------------BRIDE SUPERIEUR---------------------------------------------------#         
         a1 = 1
-        b1 = N_bride_sup - 4
+        b1 = @N_bride_sup - 4
         c1 = 1
                     
         while ( ! ( @strncmp(bride_sup[c1 - 1].nom, "plaque_sup_emplacemant_el_hybride", 33) ) )
             c1 = c1 + 1
         
-        d1 = N_bride_sup - 3
+        d1 = @N_bride_sup - 3
         e1 = 1
         
         while ( ! ( @strncmp(bride_sup[e1 - 1].nom, "plaque_sup_conection_tuyau", 26) ) )
             e1 = e1 + 1
         
-        f1 = N_bride_sup - 1
-        g1 = N_bride_sup
+        f1 = @N_bride_sup - 1
+        g1 = @N_bride_sup
         
 #----------------------------------------------BRIDE INFERIEUR----------------------------------------------------#
         a2 = 1
-        b2 = N_bride_inf - 4
+        b2 = @N_bride_inf - 4
         c2 = 1
         while ( ! ( @strncmp(bride_inf[c2 - 1].nom, "plaque_inf_emplacemant_el_hybride", 33) ) )
             c2 = c2 + 1
             
-        d2 = N_bride_inf - 3
+        d2 = @N_bride_inf - 3
         e2 = 1
         
         while ( ! ( @strncmp(bride_inf[e2 - 1].nom, "plaque_inf_conection_tuyau", 26) ) )
             e2 = e2 + 1
-        f2 = N_bride_inf - 1
-        g2 = N_bride_inf
+        f2 = @N_bride_inf - 1
+        g2 = @N_bride_inf
         
 #         ###################################################################################################
 #         ##############################FIN definition noeuds principaux#####################################
@@ -478,6 +517,12 @@ class BrideICAMaillage extends TreeItem
 #         console.log "w = " + w
 #         on definir 2 structures pour pouvoir stocker toutes les donnees relatives aux noeuds et aux elements
   
+#         for i in [0 .. bride_sup.length-1]
+#             console.log i + 1
+#             console.log "bride_sup[i].r = " + bride_sup[i].r
+#             console.log "bride_sup[i].z = " + bride_sup[i].z
+#             console.log "bride_inf[i].r = " + bride_inf[i].r
+#             console.log "bride_inf[i].z = " + bride_inf[i].z
   
 # # # # # # # # # # # # # # # # # # # # # # # # Maillage secondaire de la bride sup  
         brideICA_maillage_secondaire1 = new BrideICAMaillageSecondaire
@@ -487,7 +532,7 @@ class BrideICAMaillage extends TreeItem
             elem : elem
             noeud : noeud
             bride_sup : bride_sup
-            N_bride_sup : N_bride_sup
+            N_bride_sup : @N_bride_sup
             sp : sp
             a1 : a1
             b1 : b1
@@ -519,17 +564,17 @@ class BrideICAMaillage extends TreeItem
         
         w = parseFloat(brideICA_maillage_secondaire1.w)
         x = parseFloat(brideICA_maillage_secondaire1.x) 
-        elem = brideICA_maillage_secondaire1.elem
+        @elem = brideICA_maillage_secondaire1.elem
         @noeud = brideICA_maillage_secondaire1.noeud
         @wa1 = brideICA_maillage_secondaire1.wa
         @wb1 = brideICA_maillage_secondaire1.wb
-        wc1 = brideICA_maillage_secondaire1.wc
-        wd1 = brideICA_maillage_secondaire1.wd
-        we1 = brideICA_maillage_secondaire1.we
-        wf1 = brideICA_maillage_secondaire1.wf
-        wpression11 = brideICA_maillage_secondaire1.wpression1
-        wpression12 = brideICA_maillage_secondaire1.wpression2
-        wsup = w
+        @wc1 = brideICA_maillage_secondaire1.wc
+        @wd1 = brideICA_maillage_secondaire1.wd
+        @we1 = brideICA_maillage_secondaire1.we
+        @wf1 = brideICA_maillage_secondaire1.wf
+        @wpression11 = brideICA_maillage_secondaire1.wpression1
+        @wpression12 = brideICA_maillage_secondaire1.wpression2
+        @wsup.set w
 
     
     
@@ -537,108 +582,119 @@ class BrideICAMaillage extends TreeItem
         w = w + 1
         brideICA_maillage_secondaire2 = new BrideICAMaillageSecondaire
             string : "inf"
+            taille_secondaire : taille_secondaire
+            taille_secondaire_plaque : taille_secondaire_plaque
             w : w
             x : x
             elem : elem
             noeud : noeud
-            bride_sup : bride_sup
-            N_bride_sup : N_bride_sup
+            bride_sup : bride_inf
+            N_bride_sup : @N_bride_inf
             sp : sp
-            a1 : a1
-            b1 : b1
-            c1 : c1
-            d1 : d1
-            e1 : e1
-            f1 : f1
-            g1 : g1
-            r_moyen1 : r_moyen1
+            a1 : a2
+            b1 : b2
+            c1 : c2
+            d1 : d2
+            e1 : e2
+            f1 : f2
+            g1 : g2
+            r_moyen1 : r_moyen2
             Angle_sect : Angle_sect
-            h_plaque1 : h_plaque1
-            D_ext_plaque1 : D_ext_plaque1
-            D_int_plaque1 : D_int_plaque1
-            D_ext_tube1 : D_ext_tube1
-            D_int_tube1 : D_int_tube1
-            h_tube1 : h_tube1
-            h_tube_incline1 : h_tube_incline1
-            D_ext_base_tube_incline1 : D_ext_base_tube_incline1
-            D_int_base_tube_incline1 : D_int_base_tube_incline1
-            angle_tube_incline1 : angle_tube_incline1
+            h_plaque1 : h_plaque2
+            D_ext_plaque1 : D_ext_plaque2
+            D_int_plaque1 : D_int_plaque2
+            D_ext_tube1 : D_ext_tube2
+            D_int_tube1 : D_int_tube2
+            h_tube1 : h_tube2
+            h_tube_incline1 : h_tube_incline2
+            D_ext_base_tube_incline1 : D_ext_base_tube_incline2
+            D_int_base_tube_incline1 : D_int_base_tube_incline2
+            angle_tube_incline1 : angle_tube_incline2
             di : di
             dt : dt
             E_bride_sup : E_bride_sup
             nu_bride_sup : nu_bride_sup
             E_bride_inf : E_bride_inf
             nu_bride_inf : nu_bride_inf
-            taille_secondaire : taille_secondaire
-            taille_secondaire_plaque : taille_secondaire_plaque
-        noeuds_support = w # Je recupere le numero du dernier noeud du support pour pouvoir apres definir les noeuds de contact
+        noeuds_support = brideICA_maillage_secondaire2.w # Je recupere le numero du dernier noeud du support pour pouvoir apres definir les noeuds de contact
         
         
         
-        elem = brideICA_maillage_secondaire2.elem
+        @elem = brideICA_maillage_secondaire2.elem
         @noeud = brideICA_maillage_secondaire2.noeud
         w = parseFloat(brideICA_maillage_secondaire2.w)
         x = parseFloat(brideICA_maillage_secondaire2.x)
         @wa2 = brideICA_maillage_secondaire2.wa
         @wb2 = brideICA_maillage_secondaire2.wb
-        wc2 = brideICA_maillage_secondaire2.wc
-        wd2 = brideICA_maillage_secondaire2.wd
-        we2 = brideICA_maillage_secondaire2.we
-        wf2 = brideICA_maillage_secondaire2.wf
-        wpression21 = brideICA_maillage_secondaire2.wpression1
-        wpression22 = brideICA_maillage_secondaire2.wpression2
-        winf = w
-        
+        @wc2 = brideICA_maillage_secondaire2.wc
+        @wd2 = brideICA_maillage_secondaire2.wd
+        @we2 = brideICA_maillage_secondaire2.we
+        @wf2 = brideICA_maillage_secondaire2.wf
+        @wpression21 = brideICA_maillage_secondaire2.wpression1
+        @wpression22 = brideICA_maillage_secondaire2.wpression2
+        @winf.set w
+#         console.log elem
 # # # # # # # # # # # # # # # # # # Maillage secondaire de la vis traité
 #       Un seul element poutre pour le maillage de la vis
         w = w + 1
-        noeud.push {}
-        noeud[w - 1].r = 0.5 * di
-        noeud[w - 1].z = vis[0].z
+#         console.log w
+        @noeud.push {}
+        @noeud[w - 1].r = 0.5 * di
+        @noeud[w - 1].z = @vis[0].z      
         w = w + 1
-        noeud.push {}
-        noeud[w - 1].r = 0.5 * di
-        noeud[w - 1].z = vis[1].z
+        @noeud.push {}
+        @noeud[w - 1].r = 0.5 * di
+        @noeud[w - 1].z = @vis[1].z
         x = x + 1
-        elem[x - 1].noeud1 = w - 1
-        elem[x - 1].noeud2 = w
-        elem[x - 1].E = E_fixation # Le module d elasticite de l element de fixation
-        elem[x - 1].nu = nu_fixation # Le coefficient de Poisson de l element de fixation
-        elem[x - 1].type = 5
+#         console.log @noeud
+#         console.log x
+        @elem.push {}
+        @elem[x - 1].noeud1 = w - 1
+        @elem[x - 1].noeud2 = w
+        @elem[x - 1].E = E_fixation # Le module d elasticite de l element de fixation
+        @elem[x - 1].nu = nu_fixation # Le coefficient de Poisson de l element de fixation
+        @elem[x - 1].type = 5
 #       Geom1, geom2 et geom3  representent les proprietes des elements qui
 #       seront utilisees pour calculer les termes de la matrice de raideur
-        elem[x - 1].geom1 = Ae # Section equivalente calculee dans la fonction souplesse
-        elem[x - 1].geom2 = Ie # Moment quadratique equivalent calcule dans la fonction souplesse
-        elem[x - 1].geom3 = 0
+        @elem[x - 1].geom1 = Ae # Section equivalente calculee dans la fonction souplesse
+        @elem[x - 1].geom2 = Ie # Moment quadratique equivalent calcule dans la fonction souplesse
+        @elem[x - 1].geom3 = 0
+#         console.log @elem
+        @_bride_sup.set bride_sup
+        @_bride_inf.set bride_inf        
+        @plot_maillage(app)
         
 # # # # # # # # # # # # # # # # # # # # # # # # # #  Fin definition noeuds secondaire # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
  
 # # # # # # # # # # # # # # # # # # # # # # # # # #  Dessin  des graphes  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
  
+ 
+    plot_maillage:(app)->
+ 
         x1 = []
         y1 = []
         for k in [0 .. 8]
-            x1.push bride_sup[k].r
-            y1.push bride_sup[k].z
-        xsec = []
-        ysec = []              
-        
-        for k in [0 .. wsup - 1]
-            xsec.push noeud[k].r
-            ysec.push noeud[k].z
+            x1.push @_bride_sup[k].r
+            y1.push @_bride_sup[k].z
+#         xsec = []
+#         ysec = []              
+#         
+#         for k in [0 .. wsup - 1]
+#             xsec.push noeud[k].r
+#             ysec.push noeud[k].z
         
         x2 = []
         y2 = []
         for k in [0 ..8]
-            x2.push bride_inf[k].r
-            y2.push bride_inf[k].z
+            x2.push @_bride_inf[k].r
+            y2.push @_bride_inf[k].z
         
-        x2sec = []
-        y2sec = []
-        
-        for k in [wsup .. winf - 1]
-            x2sec.push noeud[k].r
-            y2sec.push noeud[k].z
+#         x2sec = []
+#         y2sec = []
+#         
+#         for k in [wsup .. winf - 1]
+#             x2sec.push noeud[k].r
+#             y2sec.push noeud[k].z
         
         
 # # # # # # # # # # # # # # # # # # # # # # # # # AFFICHAGE DE LA POP-UP # # # # # # # # # # # # # # # # # # # # # # # # # #       
