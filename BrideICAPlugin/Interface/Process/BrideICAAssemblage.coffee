@@ -1,7 +1,7 @@
 # Copyright 2012 Structure Computation  www.structure-computation.com
 # Copyright 2014 jeremie Bellec
 #
-# This file is part of Soda
+
 class BrideICAAssemblage extends TreeItem
     constructor: ( @bride_children ) ->
         super()
@@ -88,9 +88,10 @@ class BrideICAAssemblage extends TreeItem
                     Pr.subset(math.index(4, 4), 1)
                     Pr.subset(math.index(5, 5), -1)
                     
-                    Pr_transpose = math.transpose(Pr)
-                    k_presque_global = math.multiply(Pr_transpose, k_elem)
-                    @k_global = math.multiply(k_presque_global, Pr)
+#                     Pr_transpose = math.transpose(Pr)
+#                     k_presque_global = math.multiply(Pr_transpose, k_elem)
+#                     @k_global = math.multiply(k_presque_global, Pr)
+                    @k_global = @m_change_rep Pr, k_elem
 
                 when 2
                     P = math.zeros(6, 6)
@@ -232,9 +233,11 @@ class BrideICAAssemblage extends TreeItem
                                             ] )
                         
                         k_elem = math.divide(k_elem, nombredefixation)
-                        P_transpose = math.transpose(P)
-                        k_presque_global = math.multiply(P_transpose, k_elem)
-                        @k_global = math.multiply(k_presque_global, P)
+                        
+#                         P_transpose = math.transpose(P)
+#                         k_presque_global = math.multiply(P_transpose, k_elem)
+#                         @k_global = math.multiply(k_presque_global, P)
+                        @k_global = @m_change_rep P, k_elem
                         
                     else if noeud[elem[i - 1].noeud1 - 1].z > noeud[elem[i - 1].noeud2 - 1].z
                         P = math.zeros(6, 6)
@@ -289,9 +292,11 @@ class BrideICAAssemblage extends TreeItem
                                             ] )
                                                 
                         k_elem = math.divide(k_elem, nombredefixation)
-                        P_transpose = math.transpose(P)
-                        k_presque_global = math.multiply(P_transpose, k_elem)
-                        @k_global = math.multiply(k_presque_global, P)                          
+                        
+#                         P_transpose = math.transpose(P)
+#                         k_presque_global = math.multiply(P_transpose, k_elem)
+#                         @k_global = math.multiply(k_presque_global, P) 
+                        @k_global = @m_change_rep P, k_elem
                 when 4
                     P = math.zeros(6, 6)
                     P.subset(math.index(0, 1), -1)
@@ -316,9 +321,12 @@ class BrideICAAssemblage extends TreeItem
                             r : r0
                         k_elem = calcul_k_cone_incline1.k_elem
                         k_elem = math.divide(k_elem, nombredefixation)
-                        P_transpose = math.transpose(P)
-                        k_presque_global = math.multiply(P_transpose, k_elem)
-                        @k_global = math.multiply(k_presque_global, P)
+                        
+#                         P_transpose = math.transpose(P)
+#                         k_presque_global = math.multiply(P_transpose, k_elem)
+#                         @k_global = math.multiply(k_presque_global, P)
+                        @k_global = @m_change_rep P, k_elem
+                        
 #                         console.log "k_elem = " + k_elem
                     else if noeud[elem[i - 1].noeud1 - 1].z > noeud[elem[i - 1].noeud2 - 1].z
                         calcul_k_cone_incline2 = new BrideICACalculKConeIncline
@@ -330,9 +338,11 @@ class BrideICAAssemblage extends TreeItem
                             r : r0
                         k_elem = calcul_k_cone_incline2.k_elem
                         k_elem = math.divide(k_elem, nombredefixation)
-                        P_transpose = math.transpose(P)
-                        k_presque_global = math.multiply(P_transpose, k_elem)
-                        @k_global = math.multiply(k_presque_global, P)
+                        
+#                         P_transpose = math.transpose(P)
+#                         k_presque_global = math.multiply(P_transpose, k_elem)
+#                         @k_global = math.multiply(k_presque_global, P)
+                        @k_global = @m_change_rep P, k_elem
                 when 5
                     E = elem[i - 1].E
                     nu = elem[i - 1].nu
@@ -365,10 +375,11 @@ class BrideICAAssemblage extends TreeItem
                         pb.subset(math.index(4, 3), 1)
                         pb.subset(math.index(5, 5), -1)
                     
-                    pb_transpose = math.transpose(pb)
-                    k_presque_global = math.multiply(pb_transpose, k_elem)
-                    @k_global = math.multiply(k_presque_global, pb)
-                    k_poutre = k_elem
+#                     pb_transpose = math.transpose(pb)
+#                     k_presque_global = math.multiply(pb_transpose, k_elem)
+#                     @k_global = math.multiply(k_presque_global, pb)
+                    @k_global = @m_change_rep pb, k_elem
+                    @k_poutre = k_elem
             
             for u in [1 .. 6]
                 if u <= 3
@@ -453,16 +464,327 @@ class BrideICAAssemblage extends TreeItem
                         matrice_globale2.subset(math.index(i-1,j-1), 0)
                     else
                         matrice_globale2.subset(math.index(i-1,j-1), matrice_globale1.subset(math.index(i-1,j-1)) + matrice_globale1.subset(math.index(3*noeud_esclave-2,j-1)))
-                        console.log matrice_globale2
+            #test            
+            else if i == 3 * noeud_maitre - 1
+                for j in [1 .. matrice_globale2_length - 1 ]
+                    if j == 3 * noeud_maitre - 2
+                        val = @m_get( matrice_globale1, i, j) + @m_get( matrice_globale1, i, j) + @m_get( matrice_globale1, 3*noeud_esclave-2, j) + 
+                              @m_get( matrice_globale1, 3*noeud_esclave-2, 3*noeud_esclave-2) + 
+                              @m_get( matrice_globale1, i, 3*noeud_esclave-2)       
+                        @m_set matrice_globale2, i, j, val
+                    else if j == 3 * noeud_maitre - 1
+                        val= @m_get(matrice_globale1, i, j) + @m_get(matrice_globale1, i,3*noeud_esclave-1) +
+                              @m_get(matrice_globale1,3*noeud_esclave-2,j) + @m_get(matrice_globale1,3*noeud_esclave-2,3*noeud_esclave-1)      
+                        @m_set matrice_globale2, i, j, val          
+                    else if j == 3 * noeud_maitre
+                        val = @m_get(matrice_globale1,i,j) + @m_get(matrice_globale1,i,3*noeud_esclave) -
+                              deltar * (@m_get(matrice_globale1,i,3*noeud_esclave-1) + @m_get(matrice_globale1,3*noeud_esclave-2,3*noeud_esclave-1)) +
+                              @m_get(matrice_globale1,3*noeud_esclave-2,3*noeud_maitre) + @m_get(matrice_globale1,3*noeud_esclave-2,3*noeud_esclave)      
+                        @m_set matrice_globale2, i, j, val           
+                    else if j == 3 * noeud_esclave - 2 or j == 3 * noeud_esclave - 1 or j == 3 * noeud_esclave
+                        @m_set matrice_globale2, i, j, 0  
+                    else
+                        @m_set matrice_globale2, i, j, @m_get(matrice_globale1,i,j) + @m_get(matrice_globale1,3*noeud_esclave-2,j)          
                         
-                        
-                        
-                        
-                        
-                        
-#                                                                       JE ME SUIS ARRETÉ LIGNE 572 DU FICHIER ASSEMBLAGE !
+            #test            
+            else if i == 3 * noeud_maitre
+                for j in [1 .. matrice_globale2_length - 1 ]
+                    if j == 3 * noeud_maitre - 2
+                        val = @m_get( matrice_globale1,i,j)+@m_get( matrice_globale1,i,3*noeud_esclave-2)+
+                              @m_get( matrice_globale1,3*noeud_esclave,j)+@m_get( matrice_globale1,3*noeud_esclave,3*noeud_esclave-2)-
+                              deltar*(@m_get( matrice_globale1,3*noeud_maitre-1,j)+@m_get( matrice_globale1,3*noeud_maitre-1,3*noeud_esclave-2))       
+                        @m_set matrice_globale2, i, j, val
+                    else if j == 3 * noeud_maitre - 1
+                        val= @m_get( matrice_globale1,i,j)+@m_get( matrice_globale1,i,3*noeud_esclave-1)+
+                              @m_get( matrice_globale1,3*noeud_esclave,j)+@m_get( matrice_globale1,3*noeud_esclave,3*noeud_esclave-1)-
+                              deltar*(@m_get( matrice_globale1,3*noeud_maitre-1,j)+@m_get( matrice_globale1,3*noeud_maitre-1,3*noeud_esclave-1))    
+                        @m_set matrice_globale2, i, j, val          
+                    else if j == 3 * noeud_maitre
+                        val = @m_get( matrice_globale1,i,j)+@m_get( matrice_globale1,i,3*noeud_esclave)+
+                              @m_get( matrice_globale1,3*noeud_esclave,j)+@m_get( matrice_globale1,3*noeud_esclave,3*noeud_esclave)-
+                              deltar*(@m_get( matrice_globale1,3*noeud_maitre-1,j)+@m_get( matrice_globale1,3*noeud_maitre-1,3*noeud_esclave))-
+                              deltar*(@m_get( matrice_globale1,3*noeud_maitre,3*noeud_esclave-1)+@m_get( matrice_globale1,3*noeud_esclave,3*noeud_esclave-1))+
+                              deltar*deltar*(@m_get( matrice_globale1,3*noeud_maitre-1,3*noeud_esclave-1))     
+                        @m_set matrice_globale2, i, j, val           
+                    else if j == 3 * noeud_esclave - 2 or j == 3 * noeud_esclave - 1 or j == 3 * noeud_esclave
+                        @m_set matrice_globale2, i, j, 0  
+                    else
+                        @m_set matrice_globale2, i, j, @m_get( matrice_globale1,i,j)+@m_get( matrice_globale1,3*noeud_esclave,j)-deltar*@m_get( matrice_globale1,3*noeud_maitre-1,j)                
+              
+            
+            #Definition des couplages cinematiques
+            else if i==3 * noeud_esclave - 2
+                for j in [1 .. matrice_globale2_length - 1 ]
+                    if j == 3 * noeud_maitre - 2
+                        @m_set matrice_globale2, i, j, -Betta1  
+                    else if j == 3 * noeud_maitre
+                        @m_set matrice_globale2, i, j, -Betta1 * deltaz
+                    else if j == 3 * noeud_esclave - 2
+                        @m_set matrice_globale2, i, j, Betta1
+                    else
+                        @m_set matrice_globale2, i, j, 0
 
-#                                                                                  BON COURAGE POUR LA SUITE :)
+            
+            #Definition des couplages cinematiques
+            else if i==3 * noeud_esclave - 1
+                for j in [1 .. matrice_globale2_length - 1 ]
+                    if j == 3 * noeud_maitre - 1
+                        @m_set matrice_globale2, i, j, -Betta2  
+                    else if j == 3 * noeud_maitre
+                        @m_set matrice_globale2, i, j, Betta2 * deltar
+                    else if j == 3 * noeud_esclave - 1
+                        @m_set matrice_globale2, i, j, Betta2
+                    else
+                        @m_set matrice_globale2, i, j, 0
+            
+            
+            #Definition des couplages cinematiques
+            else if i==3 * noeud_esclave
+                for j in [1 .. matrice_globale2_length - 1 ]
+                    if j == 3 * noeud_maitre
+                        @m_set matrice_globale2, i, j, -Betta3  
+                    else if j == 3 * noeud_esclave
+                        @m_set matrice_globale2, i, j, Betta1
+                    else
+                        @m_set matrice_globale2, i, j, 0
+            
+            
+            
+            
+        
+        # Definition de la liaison glissiere
+        # On commence a prendre les cas ou il faut creer un noeud additionel (glissiere-Albin) pour l application de la precontrainte:
+        # Liste des cas ou l element poutre rigide (dont un des noeuds est
+        # glissiere) existe:
+        # 1)Assemblage visse a la bague ou au support
+        # 2)Assemblage boulonne a la bague (car l encastrement se fait du cote
+        # support)
+        # 3)Assemblage boulonne au support avec un support de type hub
+
+        # Definition d une nouvelle matrice
+        matrice_globale3 = math.zeros(matrice_globale2_length, matrice_globale2_length)
+        for i in [1 .. matrice_globale2_length - 1 ]
+            for j in [1 .. matrice_globale2_length - 1 ]
+                @m_set  matrice_globale3, i, j, @m_get(matrice_globale2,i,j)
+
+            
+            
+        #matrice_globale3=matrice_globale2;
+        #matrice_globale3(length(matrice_globale3)+3,length(matrice_globale3)+3)=0;
+
+        # La precontrainte est toujours integree du cote du noeud 2 de la vis ( du
+        # cote oppose a la tete de vis ou assimile-comme cas essais)
+        # On ajoute le noeud supplementaire
+
+        # On recherche maintenant le numero du noeud dans le maillage secondaire
+        # ayant les memes coordonnees que le noeud trouve precedement
+        # On a trouve le numero du noeud d'accrochage
+        noeud_accrochage = wd2     
+        # Connaissant maintenant le numero du noeud d accrochage dans la matrice, on va aller modifier la matrice de raideur de l assemblage en integrant
+        # l element rigide (element poutre un module d elasticite et une section grande)
+        # Definition de la matrice de l element poutre
+        # Definition des proprietes a integrer pour la matrice
+        E = E_fixation * 1000
+        S = Ae
+        nu = nu_fixation
+        I = elem[elem.length - 1].geom2
+        L = Math.abs(noeud[noeud_accrochage - 1].r - noeud[noeud.length - 1].r)
+        # Calcul de la matrice de l element rigide
+        K_poutre = math.zeros(6, 6)
+        
+        @m_set K_poutre,1,1,E*S/L
+        @m_set K_poutre,1,2,0 
+        @m_set K_poutre,1,3,0 
+        @m_set K_poutre,1,4,-E*S/L 
+        @m_set K_poutre,1,5,0 
+        @m_set K_poutre,1,6,0 
+        @m_set K_poutre,2,1,@m_get(K_poutre,1,2) 
+        @m_set K_poutre,2,2,12*E*I/(L^3) 
+        @m_set K_poutre,2,3,6*E*I/(L^2) 
+        @m_set K_poutre,2,4,0 
+        @m_set K_poutre,2,5,-12*E*I/(L^3) 
+        @m_set K_poutre,2,6,6*E*I/(L^2) 
+        @m_set K_poutre,3,1,@m_get(K_poutre,1,3) 
+        @m_set K_poutre,3,2,@m_get(K_poutre,2,3) 
+        @m_set K_poutre,3,3,4*E*I/L 
+        @m_set K_poutre,3,4,0 
+        @m_set K_poutre,3,5,-6*E*I/(L^2) 
+        @m_set K_poutre,3,6,2*E*I/L 
+        @m_set K_poutre,4,1,@m_get(K_poutre,1,4) 
+        @m_set K_poutre,4,2,@m_get(K_poutre,2,4) 
+        @m_set K_poutre,4,3,@m_get(K_poutre,3,4) 
+        @m_set K_poutre,4,4,E*S/L 
+        @m_set K_poutre,4,5,0 
+        @m_set K_poutre,4,6,0 
+        @m_set K_poutre,5,1,@m_get(K_poutre,1,5) 
+        @m_set K_poutre,5,2,@m_get(K_poutre,2,5) 
+        @m_set K_poutre,5,3,@m_get(K_poutre,3,5) 
+        @m_set K_poutre,5,4,@m_get(K_poutre,4,5) 
+        @m_set K_poutre,5,5,12*E*I/(L^3) 
+        @m_set K_poutre,5,6,-6*E*I/(L^2) 
+        @m_set K_poutre,6,1,@m_get(K_poutre,1,6) 
+        @m_set K_poutre,6,2,@m_get(K_poutre,2,6) 
+        @m_set K_poutre,6,3,@m_get(K_poutre,3,6) 
+        @m_set K_poutre,6,4,@m_get(K_poutre,4,6) 
+        @m_set K_poutre,6,5,@m_get(K_poutre,5,6) 
+        @m_set K_poutre,6,6,4*E*I/(L) 
+
+
+        pb2 = math.zeros(6, 6)
+        if noeud[noeud_accrochage - 1].r > noeud[noeud.length - 1].r
+            # L angle entre les 2 reperes est egal a 180;
+            @m_set pb2,1,1,-1
+            @m_set pb2,2,2,-1
+            @m_set pb2,3,3,-1
+            @m_set pb2,4,4,-1
+            @m_set pb2,5,5,-1
+            @m_set pb2,6,6,-1
+        # else L angle entre les 2 reperes est egal a 0;    
+        else
+            @m_set pb2,1,1,1
+            @m_set pb2,2,2,1
+            @m_set pb2,3,3,-1
+            @m_set pb2,4,4,1
+            @m_set pb2,5,5,1
+            @m_set pb2,6,6,-1
+        
+        
+        #k_global_poutre = pb2'*K_poutre*pb2
+        k_global_poutre = @m_change_rep pb2, K_poutre
+        
+#         console.log @m_length k_global_poutre
+#         console.log @m_length K_poutre
+#         console.log @m_length matrice_globale3
+#         console.log noeud.length
+        
+        for u in [1 .. 6]
+            if u <= 3
+                a = 3 * ( noeud_accrochage - 1 ) + u
+            else
+                a = 3 * ( noeud.length - 1 ) + ( u - 3 ) # TEST JEREMIE
+            for j in [1 .. 6]
+                if j <= 3
+                    b = 3 * (noeud_accrochage - 1 ) + j
+                else
+                    b = 3 * ( noeud.length - 1 ) + ( j - 3 ) # TEST JEREMIE
+                
+#                 console.log "a = " + a
+#                 console.log "b = " + b
+#                 console.log "u = " + u
+#                 console.log "j = " + j
+                @m_set matrice_globale3, a, b, ( @m_get( matrice_globale3, a, b) + @m_get( k_global_poutre, u, j) )
+        
+
+        #Couplage du noeud d accorchage et du noeud de la poutre suivant les degres de liberte R et Tetta
+
+        Bettar = Math.max( @m_get( matrice_globale3, 3*noeud.length-2, 3*noeud.length-2 ), @m_get( matrice_globale3, @m_length(matrice_globale3)-2, @m_length(matrice_globale3)-2 ) )
+        Bettatetta= Math.max( @m_get( matrice_globale3, 3*noeud.length, 3*noeud.length ), @m_get( matrice_globale3, @m_length(matrice_globale3), @m_length(matrice_globale3) ) )
+        matrice_globale4 = @m_copy matrice_globale3
+
+        for i in [1 .. @m_length(matrice_globale3)]
+            if ( i != 3 * noeud.length-2 ) and ( i != @m_length(matrice_globale3)-2 ) and ( i != 3*noeud.length ) and ( i != @m_length(matrice_globale3) )
+                for j in [ 1 .. @m_length(matrice_globale3)]
+                    if j == @m_length(matrice_globale3)-2
+                        @m_set matrice_globale4, i, j, ( @m_get( matrice_globale3, i, j ) + @m_get( matrice_globale3, i, 3*noeud.length-2 ) )
+                    else if j == @m_length(matrice_globale3)
+                        @m_set matrice_globale4, i, j, ( @m_get( matrice_globale3, i, j ) + @m_get( matrice_globale3, i, 3*noeud.length ) )
+                    else if j == 3*noeud.length-2
+                        @m_set matrice_globale4, i, j, 0
+                    else if j == 3*noeud.length
+                        @m_set matrice_globale4, i, j, 0
+                    else
+                        @m_set matrice_globale4, i, j, @m_get matrice_globale3, i, j
+
+            else if ( i == @m_length(matrice_globale3)-2 )
+                for j in [1 .. @m_length(matrice_globale3)]
+                    if ( j == 3*noeud.length-2 )
+                        @m_set matrice_globale4, i, j, 0
+                    else if ( j == @m_length(matrice_globale3)-2 )             
+                        val = @m_get(matrice_globale3,i,j) + @m_get(matrice_globale3,3*noeud.length-2,3*noeud.length-2) + 
+                              @m_get(matrice_globale3,i,3*noeud.length-2) + @m_get(matrice_globale3,3*noeud.length-2,j)
+                        @m_set matrice_globale4, i, j, val         
+                    else if ( j == @m_length(matrice_globale3) )                      
+                        val = @m_get(matrice_globale3,i,j) + @m_get(matrice_globale3,3*noeud.length-2,j) + @m_get(matrice_globale3,i,3*noeud.length) + 
+                              @m_get(matrice_globale3,3*noeud.length-2,3*noeud.length)
+                        @m_set matrice_globale4, i, j, val                          
+                    else if ( j == 3*noeud.length )
+                        @m_set matrice_globale4, i, j, 0
+                    else
+                        @m_set matrice_globale4, i, j, @m_get(matrice_globale3,i,j) + @m_get(matrice_globale3, 3*noeud.length-2, j)
+
+            else if ( i == @m_length(matrice_globale3) )
+                for j in [1 .. @m_length(matrice_globale3)]
+                    if ( j == 3*noeud.length-2 )
+                        @m_set matrice_globale4, i, j, 0
+                    else if (j == @m_length(matrice_globale3)-2)                           
+                        val = @m_get(matrice_globale3,i,j) + @m_get(matrice_globale3,i,3*noeud.length-2) + 
+                              @m_get(matrice_globale3,3*noeud.length,3*noeud.length-2) + @m_get(matrice_globale3,3*noeud.length,j)
+                        @m_set matrice_globale4, i, j, val
+                    else if (j == @m_length(matrice_globale3))
+                        val = @m_get(matrice_globale3,i,j) + @m_get(matrice_globale3,3*noeud.length,j) + @m_get(matrice_globale3,i,3*noeud.length) +
+                              @m_get(matrice_globale3,3*noeud.length,3*noeud.length)
+                        @m_set matrice_globale4, i, j, val      
+                              
+                    else if (j == 3*noeud.length)
+                        @m_set matrice_globale4, i, j, 0
+                    else
+                        @m_set matrice_globale4, i, j, @m_get(matrice_globale3,i,j) + @m_get(matrice_globale3, 3*noeud.length, j)
+
+            else if (i == 3*noeud.length-2)
+                for j in [1 .. @m_length(matrice_globale3)]
+                    if ( j== 3*noeud.length-2)
+                        @m_set matrice_globale4, i, j, Bettar
+                    else if (j == @m_length(matrice_globale3)-2)
+                        @m_set matrice_globale4, i, j, -Bettar
+                    else
+                        @m_set matrice_globale4, i, j, 0
+
+            else if (i == 3*noeud.length)
+                for j in [1 .. @m_length(matrice_globale3)]
+                    if ( j == 3*noeud.length )
+                        @m_set matrice_globale4, i, j, Bettatetta
+                    else if (j == @m_length(matrice_globale3))
+                        @m_set matrice_globale4, i, j, -Bettatetta
+                    else
+                        @m_set matrice_globale4, i, j, 0
+
+
+        #output
+        @matrice_globale4 = matrice_globale4   
+        @effort = math.zeros(1, @m_length(matrice_globale4))
+            
+     
+     
+
+     
+     
+     
+    m_get :(matrice,i,j)->
+        return matrice.subset(math.index(i-1,j-1))
+      
+    m_set :(matrice,i,j,val)->
+        return matrice.subset(math.index(i-1,j-1), val)
+      
+    m_length :(matrice)->   
+        matrice_size = math.size(matrice)
+        matrice_length = matrice_size.subset(math.index(0))
+        return matrice_length
+      
+    m_change_rep :(m0,m1)->  
+        m0_trans = math.transpose(m0) 
+        k1 = math.multiply(m1, m0)
+        m1_rep = math.multiply(m0_trans, k1)
+        return m1_rep
+     
+    #copy for square matrix 
+    m_copy :(m0)->  
+        m1 = math.zeros(@m_length(m0), @m_length(m0))
+        for i in [1 .. @m_length(m0) - 1 ]
+            for j in [1 .. @m_length(m0) - 1 ]
+                @m_set  m1, i, j, @m_get(m0,i,j)
+        return m1
+   
+
         
         
         

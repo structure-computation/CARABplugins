@@ -52,7 +52,7 @@ class BrideICA2ComputeItem extends TreeItem
         
         context_action.push
             txt: "Suppression du calcul en cours"
-            ico: "img/picto_play_maillage.png"
+            ico: "img/picto_stop.png"
             fun: ( evt, app ) =>
                 size = @_children.length
                 for i in [ 1 .. size - 1 ]
@@ -62,7 +62,7 @@ class BrideICA2ComputeItem extends TreeItem
         
         context_action.push
             txt: "affichage des graph"
-            ico: "img/picto_play_souplesse.png"
+            ico: "img/picto_graph.png"
             fun: ( evt, app ) =>
                 for child in @_children
                     if child instanceof BrideICAMaillage
@@ -98,5 +98,11 @@ class BrideICA2ComputeItem extends TreeItem
         @add_child calcul_contact
         
     calcul_assemblage: ( ) ->
-        assemblage = new BrideICAAssemblage @_children
-        @add_child assemblage
+        console.log @_children[0].chargement.Fe_tension.get()
+        console.log @_children[0].chargement.Pas_de_chargement.get()
+        console.log (@_children[0].chargement.Fe_tension.get()/@_children[0].chargement.Pas_de_chargement.get())
+        U_resultat2 = []
+        for ForceAxiale in [0 .. @_children[0].chargement.Fe_tension.get() ] by (@_children[0].chargement.Fe_tension.get()/@_children[0].chargement.Pas_de_chargement.get())
+            console.log ForceAxiale
+            assemblage = new BrideICAAssemblage @_children
+            resolv = new BrideICAResolve @_children, assemblage, ForceAxiale, U_resultat2
