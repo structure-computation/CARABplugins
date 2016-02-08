@@ -22,7 +22,7 @@ class BICA2_BrideSupItem extends BICA_Base
             h_tube :            if  params?.bridesup?.h_tube? then params.bridesup.h_tube else 56
             mesh: new Mesh( not_editable: true )
             mesh_droite: new Mesh( not_editable: true )
-            mesh_incline: new Mesh( not_editable: true )
+            mesh_incline: new Mesh( not_editable: true )            
         @mesh_droite.visualization.display_style.set "Wireframe"
         @mesh_incline.visualization.display_style.set "Wireframe"
         @mesh.visualization.display_style.set "Wireframe"    
@@ -30,7 +30,16 @@ class BICA2_BrideSupItem extends BICA_Base
         @bind =>
             if @D_ext_plaque.has_been_modified() or @D_int_plaque.has_been_modified() or @h_plaque.has_been_modified() or @D_ext_tube.has_been_modified() or @D_int_tube.has_been_modified() or @h_tube_incline.has_been_modified() or @angle_tube_incline.has_been_modified() or @h_tube.has_been_modified()
                 @render()
-        
+    
+    draw: ( info ) ->
+        app_data = @get_app_data()
+        sel_items = app_data.selected_tree_items[0]
+        if sel_items?.has_been_directly_modified()
+            if sel_items[ sel_items.length-1 ] == this
+                @colorize "blue"
+            else
+                @colorize() 
+
     render: (  ) ->
         @mesh_droite.points.clear()
         @mesh_incline.points.clear()
@@ -42,6 +51,17 @@ class BICA2_BrideSupItem extends BICA_Base
         @make_mesh_incline()
         @make_mesh()         
          
+    colorize: ( color ) ->
+        for drawable in @sub_canvas_items() 
+            if color == "blue"
+                drawable.visualization.line_color.r.val.set 61
+                drawable.visualization.line_color.g.val.set 134
+                drawable.visualization.line_color.b.val.set 246
+            else
+                drawable.visualization.line_color.r.val.set 255
+                drawable.visualization.line_color.g.val.set 255
+                drawable.visualization.line_color.b.val.set 255
+            
     cosmetic_attribute: ( name ) ->
         super( name ) or ( name in [ "mesh", "mesh_droite", "mesh_incline" ] )
         
@@ -84,8 +104,20 @@ class BICA2_BrideSupItem extends BICA_Base
           
     accept_child: ( ch ) ->
         false # AppItem
-        
+    
     sub_canvas_items: ->
         [ @mesh, @mesh_droite, @mesh_incline ]
+
+    # pour récupérer le modèle global (TreeAppData) 
+    is_app_data: ( item ) ->
+        if item instanceof TreeAppData
+            return true
+        else
+            return false
+       
+    # pour récupérer le modèle global (TreeAppData) 
+    get_app_data: ->
+        it = @get_parents_that_check @is_app_data
+        return it[ 0 ]  
 
           

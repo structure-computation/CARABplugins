@@ -40,6 +40,15 @@ class BICA2_BoulonItem extends BICA_Base
         @bind =>
             if @diametre_nominal.has_been_modified() or @diametre_tete.has_been_modified() or @diametre_implantation.has_been_modified() or @diametre_trou_passage.has_been_modified() or @_bridesup_h_plaque.has_been_modified() or @_brideinf_h_plaque.has_been_modified() or @hauteur_tete.has_been_modified()
                 @render()
+
+    draw: ( info ) ->
+        app_data = @get_app_data()
+        sel_items = app_data.selected_tree_items[0]
+        if sel_items?.has_been_directly_modified()
+            if sel_items[ sel_items.length-1 ] == this
+                @colorize "blue"
+            else
+                @colorize() 
         
                     # Creation de la fonction de recreation de Maillage
     render: (  )->
@@ -58,7 +67,18 @@ class BICA2_BoulonItem extends BICA_Base
         @make_mesh_vis()
         @make_mesh_ligne()
         @make_mesh_trou()
-        
+
+    colorize: ( color ) ->
+        for drawable in @sub_canvas_items() 
+            if color == "blue"
+                drawable.visualization.line_color.r.val.set 61
+                drawable.visualization.line_color.g.val.set 134
+                drawable.visualization.line_color.b.val.set 246
+            else
+                drawable.visualization.line_color.r.val.set 255
+                drawable.visualization.line_color.g.val.set 255
+                drawable.visualization.line_color.b.val.set 255
+   
                 # Ce sont des attributs d'affichage
     cosmetic_attribute: ( name ) ->
         super( name ) or ( name in [ "mesh_tete", "mesh_ecrou", "mesh_vis", "mesh_ligne", "mesh_trou" ] )
@@ -137,4 +157,14 @@ class BICA2_BoulonItem extends BICA_Base
     sub_canvas_items: ->
         [ @mesh_tete, @mesh_ecrou, @mesh_vis, @mesh_ligne, @mesh_trou ]
 
-          
+    # pour récupérer le modèle global (TreeAppData) 
+    is_app_data: ( item ) ->
+        if item instanceof TreeAppData
+            return true
+        else
+            return false
+       
+    # pour récupérer le modèle global (TreeAppData) 
+    get_app_data: ->
+        it = @get_parents_that_check @is_app_data
+        return it[ 0 ]  

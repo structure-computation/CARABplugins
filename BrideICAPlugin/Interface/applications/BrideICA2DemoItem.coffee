@@ -21,6 +21,9 @@ class BrideICA2DemoItem extends TreeItem
     run_demo : (app_data)->
         app = new TreeAppApplication
         a = app.add_item_depending_selected_tree app_data, BrideICA2ComputeItem
-            
+        app_data.watch_item a._children[0]._children[0]
+        app_data.watch_item a._children[0]._children[1]
+        app_data.watch_item a._children[0]._children[2]
+        
     onclick_function: ()->
         window.location = "softpage.html#" +  @demo_app
