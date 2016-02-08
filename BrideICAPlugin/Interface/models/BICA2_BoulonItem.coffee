@@ -71,9 +71,9 @@ class BICA2_BoulonItem extends BICA_Base
     colorize: ( color ) ->
         for drawable in @sub_canvas_items() 
             if color == "blue"
-                drawable.visualization.line_color.r.val.set 61
-                drawable.visualization.line_color.g.val.set 134
-                drawable.visualization.line_color.b.val.set 246
+                drawable.visualization.line_color.r.val.set 77
+                drawable.visualization.line_color.g.val.set 188
+                drawable.visualization.line_color.b.val.set 233
             else
                 drawable.visualization.line_color.r.val.set 255
                 drawable.visualization.line_color.g.val.set 255
