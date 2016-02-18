@@ -102,7 +102,6 @@ class BrideICAResolve extends MatriceItem
         contact_actif = [1 .. contact.length]
         matrice = @ajout_contact(matrice_globale5, contact_actif, k_contact, contact)
         
-        
         #--------------------------------------
         #    Tout ce qui est bloquage
         #--------------------------------------
@@ -123,7 +122,10 @@ class BrideICAResolve extends MatriceItem
             @m_set matrice, i, 3*(wsup-1)+1, 0
         
         
-        
+        for i in [ 1 .. @m_length matrice ]
+            if @m_get(matrice, 10, i) != 0
+                console.log i
+                console.log @m_get(matrice, 10, i)        
         
         
     ajout_contact : (matrice_ajout,contact_actif,k_contact,contact)->
@@ -133,10 +135,10 @@ class BrideICAResolve extends MatriceItem
         for tett in [1 .. contact_actif.length]
             #Matrice de raideur dans le repere local
             k_ressort = math.zeros(6,6)
-            @m_set k_ressort, 1, 1, k_contact[contact_actif[tett-1]-1]
-            @m_set k_ressort, 1, 4, -k_contact[contact_actif[tett-1]-1]
-            @m_set k_ressort, 4, 1, -k_contact[contact_actif[tett-1]-1]
-            @m_set k_ressort, 4, 4, k_contact[contact_actif[tett-1]-1]
+            @m_set k_ressort, 1, 1, @m_get( k_contact, 1, contact_actif[tett-1] )
+            @m_set k_ressort, 1, 4, (- @m_get( k_contact, 1, contact_actif[tett-1] )) 
+            @m_set k_ressort, 4, 1, (- @m_get( k_contact, 1, contact_actif[tett-1] ))
+            @m_set k_ressort, 4, 4, @m_get( k_contact, 1, contact_actif[tett-1] )
             
             #Matrice de passage
             pressort = math.zeros(6,6)

@@ -10,8 +10,8 @@ class BrideICAMaillage extends TreeItem
         @_viewable.set false
         
         @add_attr
-            noeud : 0
-            elem : 0
+            noeud : []
+            elem : []
             wa1 : 0
             wa2 : 0
             wb1 : 0
@@ -564,8 +564,8 @@ class BrideICAMaillage extends TreeItem
         
         w = parseFloat(brideICA_maillage_secondaire1.w)
         x = parseFloat(brideICA_maillage_secondaire1.x) 
-        @elem = brideICA_maillage_secondaire1.elem
-        @noeud = brideICA_maillage_secondaire1.noeud
+#         elem = brideICA_maillage_secondaire1.elem
+#         @noeud = brideICA_maillage_secondaire1.noeud
         @wa1 = brideICA_maillage_secondaire1.wa
         @wb1 = brideICA_maillage_secondaire1.wb
         @wc1 = brideICA_maillage_secondaire1.wc
@@ -620,10 +620,11 @@ class BrideICAMaillage extends TreeItem
         
         
         
-        @elem = brideICA_maillage_secondaire2.elem
-        @noeud = brideICA_maillage_secondaire2.noeud
+#         elem = brideICA_maillage_secondaire2.elem
+#         @noeud = brideICA_maillage_secondaire2.noeud
         w = parseFloat(brideICA_maillage_secondaire2.w)
         x = parseFloat(brideICA_maillage_secondaire2.x)
+        console.log x
         @wa2 = brideICA_maillage_secondaire2.wa
         @wb2 = brideICA_maillage_secondaire2.wb
         @wc2 = brideICA_maillage_secondaire2.wc
@@ -638,31 +639,35 @@ class BrideICAMaillage extends TreeItem
 #       Un seul element poutre pour le maillage de la vis
         w = w + 1
 #         console.log w
-        @noeud.push {}
-        @noeud[w - 1].r = 0.5 * di
-        @noeud[w - 1].z = @vis[0].z      
+        noeud.push {}
+        noeud[w - 1].r = 0.5 * di
+        noeud[w - 1].z = @vis[0].z      
         w = w + 1
-        @noeud.push {}
-        @noeud[w - 1].r = 0.5 * di
-        @noeud[w - 1].z = @vis[1].z
+        noeud.push {}
+        noeud[w - 1].r = 0.5 * di
+        noeud[w - 1].z = @vis[1].z
         x = x + 1
 #         console.log @noeud
 #         console.log x
-        @elem.push {}
-        @elem[x - 1].noeud1 = w - 1
-        @elem[x - 1].noeud2 = w
-        @elem[x - 1].E = E_fixation # Le module d elasticite de l element de fixation
-        @elem[x - 1].nu = nu_fixation # Le coefficient de Poisson de l element de fixation
-        @elem[x - 1].type = 5
+        elem.push {}
+        elem[x - 1].noeud1 = w - 1
+        elem[x - 1].noeud2 = w
+        elem[x - 1].E = E_fixation # Le module d elasticite de l element de fixation
+        elem[x - 1].nu = nu_fixation # Le coefficient de Poisson de l element de fixation
+        elem[x - 1].type = 5
 #       Geom1, geom2 et geom3  representent les proprietes des elements qui
 #       seront utilisees pour calculer les termes de la matrice de raideur
-        @elem[x - 1].geom1 = Ae # Section equivalente calculee dans la fonction souplesse
-        @elem[x - 1].geom2 = Ie # Moment quadratique equivalent calcule dans la fonction souplesse
-        @elem[x - 1].geom3 = 0
-#         console.log @elem
+        elem[x - 1].geom1 = Ae # Section equivalente calculee dans la fonction souplesse
+        elem[x - 1].geom2 = Ie # Moment quadratique equivalent calcule dans la fonction souplesse
+        elem[x - 1].geom3 = 0
+#         console.log elem
         @_bride_sup.set bride_sup
         @_bride_inf.set bride_inf        
         @plot_maillage(app)
+        
+        @elem.set elem
+        @noeud.set noeud
+#         console.log @elem
         
 # # # # # # # # # # # # # # # # # # # # # # # # # #  Fin definition noeuds secondaire # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
  

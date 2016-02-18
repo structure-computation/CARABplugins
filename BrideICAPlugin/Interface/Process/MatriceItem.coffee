@@ -4,6 +4,7 @@
 
 class MatriceItem extends TreeItem
     constructor: ( ) ->
+        super()
         
   
     m_get :(matrice,i,j)->

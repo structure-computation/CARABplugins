@@ -2,7 +2,7 @@
 # Copyright 2014 jeremie Bellec
 #
 
-class BrideICAAssemblage extends TreeItem
+class BrideICAAssemblage extends MatriceItem
     constructor: ( @bride_children ) ->
         super()
         
@@ -38,7 +38,7 @@ class BrideICAAssemblage extends TreeItem
         indelp = 0
         @k_global = []
         @ELPAK = 0
-        for i in [1 .. elem.length - 3 ]
+        for i in [1 .. elem.length ]
             switch elem[i - 1].type
                 when 1
                     ra = noeud[elem[i - 1].noeud2 - 1].r
@@ -355,7 +355,7 @@ class BrideICAAssemblage extends TreeItem
                     test.push [0, 6 * E * I / ( L * L ), 4 * E * I / L, 0, -6 * E * I / ( L * L ), 2 * E * I / (L)]
                     test.push [-E * S / L, 0, 0, E * S / L, 0, 0]
                     test.push [0, -12 * E * I / (L * L * L), -6 * E * I / ( L * L ), 0, 12 * E * I / ( L * L * L ), -6 * E * I / ( L * L )]
-                    test.push [0, 6 * E * I / ( L * L ), 2 * E * I / L, 0, -6 * E * I / ( L * L ), 4 * E * I / L]                                          
+                    test.push [0, 6 * E * I / ( L * L ), 2 * E * I / L, 0, -6 * E * I / ( L * L ), 4 * E * I / L]     
                     k_elem = math.matrix(test)
                     if ((noeud[elem[i - 1].noeud1 - 1].z - noeud[elem[i - 1].noeud2 - 1].z) < 0)
                         pb = math.zeros(6, 6)
@@ -391,50 +391,69 @@ class BrideICAAssemblage extends TreeItem
                         b = 3 * ( elem[i - 1].noeud1 - 1 ) + j
                     else
                         b = 3 * ( elem[i - 1].noeud2 - 1 ) + ( j - 3 )
-                    matrice_globale.subset(math.index(a-1, b-1), matrice_globale.subset(math.index(a-1, b-1)) + @k_global.subset(math.index(u-1, j-1)))
+#                     matrice_globale.subset(math.index(a-1, b-1), matrice_globale.subset(math.index(a-1, b-1)) + @k_global.subset(math.index(u-1, j-1)))
+                    @m_set matrice_globale, a, b, ( @m_get(matrice_globale, a, b) + @m_get(@k_global, u, j) )
                     
-        matrice_globale1 = matrice_globale
-        Betta=math.max(matrice_globale.subset(math.index(3*(contact[contact.length-1].noeudesclave)-2, 3*(contact[contact.length - 1].noeudesclave)-2)), matrice_globale.subset(math.index(3 * ( contact[contact.length - 1].noeudmaitre)-2, 3*(contact[contact.length - 1].noeudmaitre)-2)))
+        
+#         ###################################################################################################
+#         ######################### FIN de l'assemblage de la matrice rigidite globale !! ###################
+#         ###################################################################################################            
+            
+        matrice_globale1 = @m_copy matrice_globale
+        Betta = math.max( @m_get(matrice_globale, (3 * ( contact[contact.length - 1].noeudesclave) - 2), (3 * ( contact[contact.length - 1].noeudesclave ) - 2)), @m_get(matrice_globale, (3 * ( contact[contact.length - 1].noeudmaitre) - 2), (3 * ( contact[contact.length - 1].noeudmaitre ) - 2)) )
         matrice_globale_size = math.size(matrice_globale)
         matrice_globale_length = matrice_globale_size.subset(math.index(0))
-        for i in [ 1 .. matrice_globale_length - 1 ]
+        for i in [ 1 .. matrice_globale_length ]
             if i != 3 * ( contact[contact.length - 1].noeudmaitre)-2 and i != 3 * ( contact[contact.length - 1].noeudesclave)-2
-                for j in [ 1 .. matrice_globale_length - 1 ]
+                for j in [ 1 .. matrice_globale_length ]
                     if j == 3 * ( contact[contact.length - 1].noeudesclave) - 2
-                        matrice_globale1.subset(math.index(i - 1,j - 1), matrice_globale.subset(math.index(i - 1,j - 1)) + matrice_globale.subset(math.index( i, 3 * (contact[contact.length - 1].noeudmaitre)-2)))
-                    else if j == 3 * ( contact[contact.length - 1].noeudmaitre)-2
-                        matrice_globale1.subset(math.index(i - 1,j - 1), 0)
+                        @m_set matrice_globale1, i , j, ( @m_get(matrice_globale, i, j) + @m_get(matrice_globale, i, (3 * (contact[contact.length - 1].noeudmaitre)-2)) )
+                    else if j == 3 * ( contact[contact.length - 1].noeudmaitre) - 2
+                        @m_set matrice_globale1, i, j, 0
                     else
-                        matrice_globale1.subset(math.index(i - 1,j - 1), matrice_globale.subset(math.index(i - 1,j - 1)))
+                        @m_set matrice_globale1, i, j, @m_get(matrice_globale, i, j)
             else if i == 3 * ( contact[contact.length - 1].noeudesclave) - 2
-                for i in [ 1 .. matrice_globale_length - 1 ]
+                for j in [ 1 .. matrice_globale_length ]
                     if j == 3 * ( contact[contact.length - 1].noeudmaitre ) - 2 
-                        matrice_globale1.subset(math.index(i - 1, j - 1), 0)
+                        @m_set matrice_globale1, i, j, 0
                     else if j == 3 * ( contact[contact.length - 1].noeudesclave ) - 2
-                        matrice_globale1.subset(math.index(i-1,j-1), 
-                        matrice_globale1.subset(math.index(i-1,j-1)) + 
-                        matrice_globale.subset(math.index(3 * ( contact[contact.length - 1].noeudmaitre) - 2, 3 * ( contact[contact.length - 1].noeudmaitre ) - 2 )) + 
-                        matrice_globale.subset(math.index(i, 3 * ( contact[contact.length - 1].noeudmaitre ) - 2 )) + 
-                        matrice_globale.subset(math.index( 3 * ( contact[contact.length - 1].noeudmaitre ) - 2, j )))                        
+                        @m_set matrice_globale1, i, j, ( @m_get(matrice_globale, i, j) + @m_get(matrice_globale, (3 * ( contact[contact.length - 1].noeudmaitre) - 2), (3 * ( contact[contact.length - 1].noeudmaitre ) - 2)) + @m_get(matrice_globale, i, (3 * ( contact[contact.length - 1].noeudmaitre ) - 2)) + @m_get(matrice_globale, (3 * ( contact[contact.length - 1].noeudmaitre) - 2), j) )                   
+
                     else
-                        matrice_globale1.subset(math.index(i-1,j-1), matrice_globale.subset(math.index(i-1,j-1)) + matrice_globale.subset(math.index(3 * ( contact[contact.length - 1].noeudmaitre)-2, j - 1)))
+                        @m_set matrice_globale1, i, j, ( @m_get(matrice_globale, i, j) + @m_get(matrice_globale, (3 * ( contact[contact.length - 1].noeudmaitre) - 2), j) )
             else if i == 3 * ( contact[contact.length - 1].noeudmaitre ) - 2
-                for i in [ 1 .. matrice_globale_length - 1]
+                for j in [ 1 .. matrice_globale_length ]
                     if j == 3 * ( contact[contact.length - 1].noeudmaitre ) - 2
-                        matrice_globale1.subset(math.index(i-1,j-1), Betta)
+                        @m_set matrice_globale1, i, j, Betta
                     else if j == 3 * ( contact[contact.length - 1].noeudesclave ) - 2
-                        matrice_globale1.subset(math.index(i-1,j-1), -Betta)
+                        @m_set matrice_globale1, i, j, -Betta
                     else
-                        matrice_globale1.subset(math.index(i-1,j-1), 0)
+                        @m_set matrice_globale1, i, j, 0
+
+        # test
+#         for i in [ 1 .. @m_length matrice_globale ]
+#             if @m_get(matrice_globale, 46, i) != 0
+#                 console.log i
+#                 console.log @m_get(matrice_globale, 46, i)
+# 
+#         for i in [ 1 .. @m_length matrice_globale1 ]
+#             if @m_get(matrice_globale1, 46, i) != 0
+#                 console.log i
+#                 console.log @m_get(matrice_globale1, 46, i)
+            
+#         ###################################################################################################
+#         ######################### FIN de l'assemblage de la matrice rigidite globale1!! ###################
+#         ###################################################################################################            
+            
 
         noeud_maitre = wd1
         noeud_esclave = noeud.length - 2
-        matrice_globale2 = matrice_globale1
+        matrice_globale2 = @m_copy matrice_globale1
         deltar = Math.abs(noeud[noeud_esclave - 1].r - noeud[noeud_maitre - 1].r)
         deltaz = noeud[noeud_esclave - 1].z - noeud[noeud_maitre - 1].z
-        Betta1 = math.max(matrice_globale1.subset(math.index(3 * noeud_maitre - 2, 3 * noeud_maitre - 2 )), matrice_globale1.subset(math.index(3 * noeud_esclave - 2, 3 * noeud_esclave - 2 )))
-        Betta2 = math.max(matrice_globale1.subset(math.index(3 * noeud_maitre - 1, 3 * noeud_maitre - 1 )), matrice_globale1.subset(math.index(3 * noeud_esclave - 1, 3 * noeud_esclave - 1 )))
-        Betta3 = math.max(matrice_globale1.subset(math.index(3 * noeud_maitre, 3 * noeud_maitre)), matrice_globale1.subset(math.index(3 * noeud_esclave, 3 * noeud_esclave )))
+        Betta1 = math.max( @m_get(matrice_globale1, (3 * noeud_maitre - 2), (3 * noeud_maitre - 2)), @m_get(matrice_globale1, (3 * noeud_esclave - 2), (3 * noeud_esclave - 2)) )
+        Betta2 = math.max( @m_get(matrice_globale1, (3 * noeud_maitre - 1), (3 * noeud_maitre - 1)), @m_get(matrice_globale1, (3 * noeud_esclave - 1), (3 * noeud_esclave - 1)) )
+        Betta3 = math.max( @m_get(matrice_globale1, (3 * noeud_maitre), (3 * noeud_maitre)), @m_get(matrice_globale1, (3 * noeud_esclave), (3 * noeud_esclave)) )
         matrice_globale2_size = math.size(matrice_globale2)
         matrice_globale2_length = matrice_globale2_size.subset(math.index(0))
         
@@ -442,28 +461,28 @@ class BrideICAAssemblage extends TreeItem
             if ( i != 3 * noeud_maitre - 2 ) and ( i != 3 * noeud_esclave - 2 ) and ( i != 3 * noeud_maitre - 1 ) and ( i != 3 * noeud_esclave - 1 ) and ( i != 3 * noeud_maitre ) and ( i != 3 * noeud_esclave )
                 for j in [1 .. matrice_globale2_length - 1 ]
                     if j == 3 * noeud_maitre - 2
-                        matrice_globale2.subset(math.index(i-1,j-1), matrice_globale1.subset(math.index(i-1,j-1)) + matrice_globale1.subset(math.index(i,3*noeud_esclave-2)))
+                        @m_set matrice_globale2, i , j, ( @m_get(matrice_globale1, i, j) + @m_get(matrice_globale1, i, (3 * noeud_esclave - 2)) )
                     else if j == 3 * noeud_maitre - 1
-                        matrice_globale2.subset(math.index(i-1,j-1), matrice_globale1.subset(math.index(i-1,j-1)) + matrice_globale2.subset(math.index(i,3*noeud_esclave-1)))
+                        @m_set matrice_globale2, i , j, ( @m_get(matrice_globale1, i, j) + @m_get(matrice_globale1, i, (3 * noeud_esclave - 2)) )
                     else if j == 3 * noeud_maitre
-                        matrice_globale2.subset(math.index(i-1,j-1), matrice_globale1.subset(math.index(i-1,j-1)) + matrice_globale1.subset(math.index(i,3*noeud_esclave)) - deltar * matrice_globale1.subset(math.index(i-1, 3*noeud_esclave-1)))
+                        @m_set matrice_globale2, i , j, ( @m_get(matrice_globale1, i, j) + @m_get(matrice_globale1, i, (3 * noeud_esclave)) - deltar * @m_get(matrice_globale1, i, (3 * noeud_esclave - 1)) )
                     else if j == 3 * noeud_esclave - 2 or j == 3 * noeud_esclave - 1 or j == 3 * noeud_esclave
-                        matrice_globale2.subset(math.index(i-1,j-1), 0)
+                        @m_set matrice_globale2, i , j, 0
                     else
-                        matrice_globale2.subset(math.index(i-1,j-1), matrice_globale1.subset(math.index(i-1,j-1)))
+                        @m_set matrice_globale2, i , j, ( @m_get(matrice_globale1, i, j) )
             
             else if i == 3 * noeud_maitre - 2
                 for j in [1 .. matrice_globale2_length - 1 ]
                     if j == 3 * noeud_maitre - 2
-                        matrice_globale2.subset(math.index(i-1,j-1), matrice_globale1.subset(math.index(i-1,j-1)) + matrice_globale1.subset(math.index(3*noeud_esclave-2,j-1)) + matrice_globale1.subset(math.index(3*noeud_esclave-2,3*noeud_esclave-2)) + matrice_globale1.subset(math.index(i,3*noeud_esclave-2)))
+                        @m_set matrice_globale2, i , j, ( @m_get(matrice_globale1, i, j) + @m_get(matrice_globale1, (3 * noeud_esclave - 2), j) + @m_get(matrice_globale1, (3 * noeud_esclave - 2), (3 * noeud_esclave - 2) ) + @m_get(matrice_globale1, i, (3 * noeud_esclave - 2) ) )
                     else if j == 3 * noeud_maitre - 1
-                        matrice_globale2.subset(math.index(i-1,j-1), matrice_globale1.subset(math.index(i-1,j-1)) + matrice_globale1.subset(math.index(i,3*noeud_esclave-1)) + matrice_globale1.subset(math.index(3*noeud_esclave-2,j-1)) + matrice_globale1.subset(math.index(3*noeud_esclave-2,3*noeud_esclave-1)))
+                        @m_set matrice_globale2, i , j, ( @m_get(matrice_globale1, i, j) + @m_get(matrice_globale1, i, (3 * noeud_esclave - 1)) + @m_get(matrice_globale1, (3 * noeud_esclave - 2), j) + @m_get(matrice_globale1, (3 * noeud_esclave - 2), (3 * noeud_esclave - 1) ) )
                     else if j == 3 * noeud_maitre
-                        matrice_globale2.subset(math.index(i-1,j-1), matrice_globale1.subset(math.index(i-1,j-1)) + matrice_globale1.subset(math.index(i,3*noeud_esclave)) - deltar * ( matrice_globale1.subset(math.index(i-1, 3*noeud_esclave-1)) + matrice_globale1.subset(math.index(3*noeud_esclave-2,3*noeud_esclave-1))) + matrice_globale1.subset(math.index(3*noeud_esclave-2,3*noeud_maitre)) + matrice_globale1.subset(math.index(3*noeud_esclave-2,3*noeud_esclave)))
+                        @m_set matrice_globale2, i , j, ( @m_get(matrice_globale1, i, j) + @m_get(matrice_globale1, i, (3 * noeud_esclave)) - deltar * ( @m_get(matrice_globale1, i, (3 * noeud_esclave - 1)) + @m_get(matrice_globale1, (3 * noeud_esclave - 2), (3 * noeud_esclave - 1)) + @m_get(matrice_globale1, (3 * noeud_esclave - 2), (3 * noeud_maitre)) + @m_get(matrice_globale1, (3 * noeud_esclave - 2), (3 * noeud_esclave)) ) )
                     else if j == 3 * noeud_esclave - 2 or j == 3 * noeud_esclave - 1 or j == 3 * noeud_esclave
-                        matrice_globale2.subset(math.index(i-1,j-1), 0)
+                        @m_set matrice_globale2, i , j, 0
                     else
-                        matrice_globale2.subset(math.index(i-1,j-1), matrice_globale1.subset(math.index(i-1,j-1)) + matrice_globale1.subset(math.index(3*noeud_esclave-2,j-1)))
+                        @m_set matrice_globale2, i , j, ( @m_get(matrice_globale1, i, j) + @m_get(matrice_globale1, (3 * noeud_esclave - 2), j) )
             #test            
             else if i == 3 * noeud_maitre - 1
                 for j in [1 .. matrice_globale2_length - 1 ]
@@ -562,7 +581,7 @@ class BrideICAAssemblage extends TreeItem
         # 3)Assemblage boulonne au support avec un support de type hub
 
         # Definition d une nouvelle matrice
-        matrice_globale3 = math.zeros(matrice_globale2_length, matrice_globale2_length)
+        matrice_globale3 = math.zeros(matrice_globale2_length + 3, matrice_globale2_length + 3)
         for i in [1 .. matrice_globale2_length - 1 ]
             for j in [1 .. matrice_globale2_length - 1 ]
                 @m_set  matrice_globale3, i, j, @m_get(matrice_globale2,i,j)
@@ -680,7 +699,6 @@ class BrideICAAssemblage extends TreeItem
         Bettar = Math.max( @m_get( matrice_globale3, 3*noeud.length-2, 3*noeud.length-2 ), @m_get( matrice_globale3, @m_length(matrice_globale3)-2, @m_length(matrice_globale3)-2 ) )
         Bettatetta= Math.max( @m_get( matrice_globale3, 3*noeud.length, 3*noeud.length ), @m_get( matrice_globale3, @m_length(matrice_globale3), @m_length(matrice_globale3) ) )
         matrice_globale4 = @m_copy matrice_globale3
-
         for i in [1 .. @m_length(matrice_globale3)]
             if ( i != 3 * noeud.length-2 ) and ( i != @m_length(matrice_globale3)-2 ) and ( i != 3*noeud.length ) and ( i != @m_length(matrice_globale3) )
                 for j in [ 1 .. @m_length(matrice_globale3)]
@@ -748,7 +766,6 @@ class BrideICAAssemblage extends TreeItem
                     else
                         @m_set matrice_globale4, i, j, 0
 
-
         #output
         @matrice_globale4 = matrice_globale4   
         @effort = math.zeros(1, @m_length(matrice_globale4))
@@ -759,34 +776,33 @@ class BrideICAAssemblage extends TreeItem
      
      
      
-    m_get :(matrice,i,j)->
-        return matrice.subset(math.index(i-1,j-1))
-      
-    m_set :(matrice,i,j,val)->
-        return matrice.subset(math.index(i-1,j-1), val)
-      
-    m_length :(matrice)->   
-        matrice_size = math.size(matrice)
-        matrice_length = matrice_size.subset(math.index(0))
-        return matrice_length
-      
-    m_change_rep :(m0,m1)->  
-        m0_trans = math.transpose(m0) 
-        k1 = math.multiply(m1, m0)
-        m1_rep = math.multiply(m0_trans, k1)
-        return m1_rep
-     
-    #copy for square matrix 
-    m_copy :(m0)->  
-        m1 = math.zeros(@m_length(m0), @m_length(m0))
-        for i in [1 .. @m_length(m0) - 1 ]
-            for j in [1 .. @m_length(m0) - 1 ]
-                @m_set  m1, i, j, @m_get(m0,i,j)
-        return m1
-   
+#     m_get :(matrice,i,j)->
+#         return matrice.subset(math.index(i-1,j-1))
+#       
+#     m_set :(matrice,i,j,val)->
+#         return matrice.subset(math.index(i-1,j-1), val)
+#       
+#     m_length :(matrice)->   
+#         matrice_size = math.size(matrice)
+#         matrice_length = matrice_size.subset(math.index(0))
+#         return matrice_length
+#       
+#     m_change_rep :(m0,m1)->  
+#         m0_trans = math.transpose(m0) 
+#         k1 = math.multiply(m1, m0)
+#         m1_rep = math.multiply(m0_trans, k1)
+#         return m1_rep
+#      
+#     #copy for square matrix 
+#     m_copy :(m0)->  
+#         m1 = math.zeros(@m_length(m0), @m_length(m0))
+#         for i in [1 .. @m_length(m0) - 1 ]
+#             for j in [1 .. @m_length(m0) - 1 ]
+#                 @m_set  m1, i, j, @m_get(m0,i,j)
+#         return m1
+#    
 
-        
-        
+
         
         
         

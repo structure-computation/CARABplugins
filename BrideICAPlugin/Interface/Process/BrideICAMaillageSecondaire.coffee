@@ -7,8 +7,8 @@ class BrideICAMaillageSecondaire extends Model
         super()
         
         @add_attr
-            elem : []
-            noeud : []
+#             elem : []
+#             noeud : []
             w : 0
             x : 0
             wa : 0
@@ -67,7 +67,7 @@ class BrideICAMaillageSecondaire extends Model
 #         console.log "angle_tube_incline1 = " + angle_tube_incline1                                   
         if ( @strcmp(string, "sup") )
             noeud.push {}
-            elem.push {}
+#             elem.push {}
             noeud[w - 1].r = bride_sup[0].r
             noeud[w - 1].z = bride_sup[0].z
             wa = w
@@ -324,8 +324,8 @@ class BrideICAMaillageSecondaire extends Model
                     elem[x - 1].geom2 = 0
                     elem[x - 1].geom3 = ( D_ext_tube1 - D_int_tube1 ) / 2
             wg = noeud.length
-            @elem.set elem
-            @noeud.set noeud
+#             @elem.set elem
+#             @noeud.set noeud
             @w.set w
             @x.set x
             @wa.set wa
@@ -339,7 +339,7 @@ class BrideICAMaillageSecondaire extends Model
 
         else if ( @strcmp(string, "inf") )
             noeud.push {}
-            elem.push {}
+#             elem.push {}
             noeud[w - 1].r = bride_sup[0].r
             noeud[w - 1].z = bride_sup[0].z
             wa = w
@@ -605,8 +605,8 @@ class BrideICAMaillageSecondaire extends Model
                     elem[x - 1].geom3 = ( D_ext_tube1 - D_int_tube1 ) / 2
             wg = noeud.length        
                     
-            @elem.set elem
-            @noeud.set noeud
+#             @elem.set elem
+#             @noeud.set noeud
             @w.set w
             @x.set x
             @wa.set wa
@@ -618,7 +618,7 @@ class BrideICAMaillageSecondaire extends Model
             @wpression1.set wpression1
             @wpression2.set wpression2
             
-#         console.log @elem
+#             console.log elem
     
                     
                     
