@@ -102,30 +102,98 @@ class BrideICAResolve extends MatriceItem
         contact_actif = [1 .. contact.length]
         matrice = @ajout_contact(matrice_globale5, contact_actif, k_contact, contact)
         
+       
         #--------------------------------------
         #    Tout ce qui est bloquage
         #--------------------------------------
-        @m_set effort, 3*(winf-1)+3, 1, 0
-        @m_set effort, 3*(winf-1)+2, 1, 0
-        @m_set effort, 3*(winf-1)+1, 1, 0
-        for i in [1 .. @m_length(matrice)]
-            @m_set matrice, 3*(winf-1)+3, i, 0
-            @m_set matrice, 3*(winf-1)+2, i, 0
-            @m_set matrice, 3*(winf-1)+1, i, 0
-            @m_set matrice, i, 3*(winf-1)+3, 0
-            @m_set matrice, i, 3*(winf-1)+2, 0
-            @m_set matrice, i, 3*(winf-1)+1, 0
+        
+        effort = @m_pop_lin effort, 3*(winf-1)+3
+        effort = @m_pop_lin effort, 3*(winf-1)+2
+        effort = @m_pop_lin effort, 3*(winf-1)+1
+        
+        matrice = @m_pop_lin matrice, 3*(winf-1)+3
+        matrice = @m_pop_lin matrice, 3*(winf-1)+2
+        matrice = @m_pop_lin matrice, 3*(winf-1)+1
+        
+        matrice = @m_pop_col matrice, 3*(winf-1)+3
+        matrice = @m_pop_col matrice, 3*(winf-1)+2
+        matrice = @m_pop_col matrice, 3*(winf-1)+1
+        
+        effort = @m_pop_lin effort, 3*(wsup-1)+1
+        matrice = @m_pop_lin matrice, 3*(wsup-1)+1
+        matrice = @m_pop_col matrice, 3*(wsup-1)+1
+        
+        
+        matrice_size = math.size(matrice)
+        sl = matrice_size.subset(math.index(0))
+        sc = matrice_size.subset(math.index(1))
+        console.log  sl
+        console.log  sc
+        
+        effort_size = math.size(effort)
+        sle = matrice_size.subset(math.index(0))
+        sce = matrice_size.subset(math.index(1))
+        console.log  sle
+        
+#         matrice_size = math.size(effort)
+#         sl1 = matrice_size.subset(math.index(0))
+#         sc1 = matrice_size.subset(math.index(1))
+#         console.log  sl1
+#         console.log  sc1
+#         
+#         alert "ok"
+#         
+#         for i in [1 .. @m_length(matrice)]
+#             @m_set matrice, 3*(winf-1)+3, i, 0
+#             @m_set matrice, 3*(winf-1)+2, i, 0
+#             @m_set matrice, 3*(winf-1)+1, i, 0
+#             @m_set matrice, i, 3*(winf-1)+3, 0
+#             @m_set matrice, i, 3*(winf-1)+2, 0
+#             @m_set matrice, i, 3*(winf-1)+1, 0
+# 
+#         @m_set effort, 3*(wsup-1)+1, 1, 0
+#         for i in [1 .. @m_length(matrice)]
+#             @m_set matrice, 3*(wsup-1)+1, i, 0
+#             @m_set matrice, i, 3*(wsup-1)+1, 0
+        
+        
+        
+        # Pour le test de symetrie:
+        # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour l effort
+        # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour l effort
+        # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour leffort
+        # effort(1,:)=[]; % On supprime la ligne correspondante pour l effort
+        # effort(1,:)=[]; % On supprime la ligne correspondante pour l effort
+        # effort(1,:)=[]; % On supprime la ligne correspondante pour l effort
+        # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
+        # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
+        # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
+        # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
+        # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
+        # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
+        # matrice(1,:)=[]; % On supprime la ligne correspondante
+        # matrice(:,1)=[]; % On supprime la colonne correspodante
+        # matrice(1,:)=[]; % On supprime la ligne correspondante
+        # matrice(:,1)=[]; % On supprime la colonne correspodante
+        # matrice(1,:)=[]; % On supprime la ligne correspondante
+        # matrice(:,1)=[]; % On supprime la colonne correspodante
 
-        @m_set effort, 3*(wsup-1)+1, 1, 0
-        for i in [1 .. @m_length(matrice)]
-            @m_set matrice, 3*(wsup-1)+1, i, 0
-            @m_set matrice, i, 3*(wsup-1)+1, 0
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #Resolution du systeme F=KU
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        U = math.multiply( math.inv(matrice) , effort)
         
         
-        for i in [ 1 .. @m_length matrice ]
-            if @m_get(matrice, 10, i) != 0
-                console.log i
-                console.log @m_get(matrice, 10, i)        
+        #Rajout des points bloqués pour retrouver l'indexage initial
+#         U = [ U(1:3*(wsup-1)) ; 0; U(3*(wsup-1)+1:length(U)) ];
+#         matrice.subset(math.index(i-1,j-1), val)
+#         
+#         
+#         U = [ U(1:3*(winf-1)) ; 0; 0; 0; U(3*(winf-1)+1:length(U)) ];
+        # Pour le test de symetrie
+        # U=[0;0;0;U];
+        # U=[U(1:3*wsup);0;0;0;U(3*wsup+1:length(U))];     
         
         
     ajout_contact : (matrice_ajout,contact_actif,k_contact,contact)->
