@@ -624,7 +624,6 @@ class BrideICAMaillage extends TreeItem
 #         @noeud = brideICA_maillage_secondaire2.noeud
         w = parseFloat(brideICA_maillage_secondaire2.w)
         x = parseFloat(brideICA_maillage_secondaire2.x)
-        console.log x
         @wa2 = brideICA_maillage_secondaire2.wa
         @wb2 = brideICA_maillage_secondaire2.wb
         @wc2 = brideICA_maillage_secondaire2.wc
