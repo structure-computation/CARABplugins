@@ -133,50 +133,7 @@ class BrideICAResolve extends MatriceItem
         sle = matrice_size.subset(math.index(0))
         sce = matrice_size.subset(math.index(1))
 #         console.log  sle
-        
-#         matrice_size = math.size(effort)
-#         sl1 = matrice_size.subset(math.index(0))
-#         sc1 = matrice_size.subset(math.index(1))
-#         console.log  sl1
-#         console.log  sc1
-#         
-#         alert "ok"
-#         
-#         for i in [1 .. @m_length(matrice)]
-#             @m_set matrice, 3*(winf-1)+3, i, 0
-#             @m_set matrice, 3*(winf-1)+2, i, 0
-#             @m_set matrice, 3*(winf-1)+1, i, 0
-#             @m_set matrice, i, 3*(winf-1)+3, 0
-#             @m_set matrice, i, 3*(winf-1)+2, 0
-#             @m_set matrice, i, 3*(winf-1)+1, 0
-# 
-#         @m_set effort, 3*(wsup-1)+1, 1, 0
-#         for i in [1 .. @m_length(matrice)]
-#             @m_set matrice, 3*(wsup-1)+1, i, 0
-#             @m_set matrice, i, 3*(wsup-1)+1, 0
-
-
-        
-        
-        # Pour le test de symetrie:
-        # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour leffort
-        # effort(1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # effort(1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # effort(1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
-        # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
-        # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
-        # matrice(1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,1)=[]; % On supprime la colonne correspodante
-        # matrice(1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,1)=[]; % On supprime la colonne correspodante
-        # matrice(1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,1)=[]; % On supprime la colonne correspodante
+         
 
         #%%%%%%%%%%%%%%%%%%%%%%%%%%
         #Resolution du systeme F=KU
@@ -187,7 +144,7 @@ class BrideICAResolve extends MatriceItem
         console.log math.transpose(effort)
 #         console.log math.det(matrice)
 #         
-        U = math.multiply( math.inv(matrice) , effort)
+        U = math.multiply( Inv , effort)
         console.log math.transpose(U)
         
         

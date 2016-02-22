@@ -18,7 +18,7 @@
 
 
 #
-class Function extends Model
+class FunctionModel extends Model
     constructor: (  ) ->
         super()
         
