@@ -58,8 +58,51 @@ class MatriceItem extends TreeItem
                 for i in [1 .. sl ]
                     @m_set  m1, i, jj, @m_get(m0,i,j)
 
-        return m1           
+        return m1   
+    
+    
+    m_push_lin :(m0,num_lin,val)-> 
+        matrice_size = math.size(m0)
+        sl = matrice_size.subset(math.index(0))
+        sc = matrice_size.subset(math.index(1))
+        m1 = math.zeros(sl+1, sc)
+        for j in [1 .. sc ]
+            @m_set m1, num_lin, j, val
+            for i in [1 .. num_lin-1]
+                @m_set  m1, i, j, @m_get(m0,i,j)
+            for i in [num_lin+1 .. sl+1]
+                @m_set  m1, i, j, @m_get(m0,i-1,j)          
                 
+        return m1   
+    
+    
+    m_push_col :(m0,num_col,val)-> 
+        matrice_size = math.size(m0)
+        sl = matrice_size.subset(math.index(0))
+        sc = matrice_size.subset(math.index(1))
+        m1 = math.zeros(sl, sc+1)
+        for i in [1 .. sl ]
+            @m_set m1, i, num_col, val
+            for j in [1 .. num_col-1]
+                @m_set  m1, i, j, @m_get(m0,i,j)
+            for j in [num_col+1 .. sc+1]
+                @m_set  m1, i, j, @m_get(m0,i,j-1)          
+                
+        return m1                  
+    
+    m_sum :(m0) ->
+        r = 0
+        matrice_size = math.size(m0)
+        sl = matrice_size.subset(math.index(0))
+        sc = matrice_size.subset(math.index(1))
+        for i in [1 .. sl]
+            for j in [1 .. sc]
+#                 if i == j and (@m_get m0, i, j) >= 10000000 and (@m_get m0, i, j) <= 100000000
+#                     console.log i
+#                     console.log @m_get m0, i, j
+                r += @m_get m0, i, j
+        return r
+    
     m_triu : (m0) ->
         m1 = @m_copy m0
         for i in [1 .. @m_length(m0) ]

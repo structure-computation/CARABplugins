@@ -123,21 +123,11 @@ class BrideICAResolve extends MatriceItem
         matrice = @m_pop_col matrice, (3*(wsup-1)+1)
         
         
-        matrice_size = math.size(matrice)
-        sl = matrice_size.subset(math.index(0))
-        sc = matrice_size.subset(math.index(1))
-#         console.log  sl
-#         console.log  sc
-        
-        effort_size = math.size(effort)
-        sle = matrice_size.subset(math.index(0))
-        sce = matrice_size.subset(math.index(1))
-#         console.log  sle
-         
 
         #%%%%%%%%%%%%%%%%%%%%%%%%%%
         #Resolution du systeme F=KU
         #%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         console.log matrice
         Inv = math.inv(matrice)
         console.log Inv
@@ -146,10 +136,15 @@ class BrideICAResolve extends MatriceItem
 #         
         U = math.multiply( Inv , effort)
         console.log math.transpose(U)
+
         
+        U = math.lusolve(matrice,effort)
+        console.log math.transpose(U)
         
         #Rajout des points bloqués pour retrouver l'indexage initial
 #         U = [ U(1:3*(wsup-1)) ; 0; U(3*(wsup-1)+1:length(U)) ];
+        U = @m_push_lin U, (3*(wsup-1)), 0
+#         console.log U
 #         matrice.subset(math.index(i-1,j-1), val)
 #         
 #         
@@ -157,6 +152,19 @@ class BrideICAResolve extends MatriceItem
         # Pour le test de symetrie
         # U=[0;0;0;U];
         # U=[U(1:3*wsup);0;0;0;U(3*wsup+1:length(U))];     
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
     ajout_contact : (matrice_ajout,contact_actif,k_contact,contact)->

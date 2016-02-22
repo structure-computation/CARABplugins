@@ -47,7 +47,7 @@ class BrideICAAssemblage extends MatriceItem
                     e = elem[i - 1].E
                     nu = elem[i - 1].nu
                     l = ra - rb
-                    rbra2 = Math.pow( ( rb / ra ), 2 )
+                    rbra2 = ( rb / ra )*( rb / ra )
                     ra2 = ra * ra
                     ra3 = ra * ra * ra
                     c1 = ( ( 1 + nu ) / 2 ) * ( rb / ra ) * Math.log( ra / rb ) + ( ( 1 - nu ) / 4 ) * ( ( ra / rb ) - ( rb / ra ) )
@@ -61,44 +61,62 @@ class BrideICAAssemblage extends MatriceItem
                     f = ( 2 * Math.PI * rb / nombredefixation )
                     D = ( e * ( h * h * h ) ) / ( 12 * ( 1 - nu * nu ) )
                     Dpl = f * D / ( ( c2 * c6 - c3 * c5 ) )
-                    
 
-
-                    k_elem = math.matrix( [ [ ( 2 * Math.PI * e * h / ( nombredefixation * ( 1 - nu * nu ) ) ) * ( ( -1.5 - nu - rb / l + 0.5 * ( ( rb / l ) * ( rb / l ) ) * ( ra * ra / ( rb * rb ) - 1 ) + ( 1 + 2 * rb / l + rb * rb / ( l * l ) ) * Math.log( ra / rb ) ) ),0, 0, ( 2 * Math.PI * e * h / ( nombredefixation * ( 1 - nu * nu ) ) ) * ( 0.5 + rb / l - 0.5 * ( ( rb / l ) * ( rb / l ) ) * ( ra * ra / ( rb * rb ) - 1 ) - ( rb / l + rb * rb / ( l * l ) ) * Math.log( ra / rb ) ), 0, 0 ],
-                                            
-                                            [ 0, Dpl * c5 / ra3, Dpl * ( c1 * c5 - c4 * c2 ) / ra2, 0, - ( Dpl * c5 / ra3 ), Dpl * c2 / ra2 ],
-                                            
-                                            [ 0, Dpl * ( c1 * c5 - c4 * c2 ) / ra2, Dpl * ( c1 * c6 - c3 * c4 ) / ra, 0, ( - Dpl * c6 / ra2 ), Dpl * c3 / ra ],
-                                            
-                                            [ ( 2 * Math.PI * e * h / ( nombredefixation * ( 1 - nu * nu ) ) ) * ( 0.5 + rb / l - 0.5 * ( ( rb / l ) * ( rb / l ) ) * ( ra * ra / ( rb * rb ) - 1 ) - ( rb / l + rb * rb / ( l * l ) ) * Math.log( ra / rb ) ), 0, 0, ( 2 * Math.PI * e * h / ( nombredefixation * ( 1 - nu * nu ) ) ) * ( 0.5 + nu - rb / l + 0.5 * ( ( rb / l ) * ( rb / l ) ) * ( ra * ra / ( rb * rb ) - 1 ) + ( rb * rb / ( l * l ) ) * Math.log( ra / rb ) ), 0, 0 ],
-                                            
-                                            [ 0, - ( Dpl * c5 / ra3 ), ( - Dpl * c6 / ra2 ), 0, Dpl * c5 / ra3, -Dpl * c2 / ra2 ],
-                                            
-                                            [ 0, Dpl * c2 / ra2, Dpl * c3 / ra, 0, -Dpl * c2 / ra2, Dpl * ( c2 * c9 - c8 * c3 ) / rb ]
-                                        
-                                        ] )
+                    k_elem = math.zeros(6, 6)
                     
-                    
+                    @m_set k_elem,1,1, (( 2 * Math.PI * e * h / ( nombredefixation * ( 1 - nu * nu ) ) ) * ( ( -1.5 - nu - rb / l + 0.5 * ( ( rb / l ) * ( rb / l ) ) * ( ra * ra / ( rb * rb ) - 1 ) + ( 1 + 2 * rb / l + rb * rb / ( l * l ) ) * Math.log( ra / rb ))))
+                    @m_set k_elem,1,2, 0 
+                    @m_set k_elem,1,3, 0 
+                    @m_set k_elem,1,4, (( 2 * Math.PI * e * h / ( nombredefixation * ( 1 - nu * nu ) ) ) * ( 0.5 + rb / l - 0.5 * ( ( rb / l ) * ( rb / l ) ) * ( ra * ra / ( rb * rb ) - 1 ) - ( rb / l + rb * rb / ( l * l ) ) * Math.log( ra / rb ) ))
+                    @m_set k_elem,1,5, 0 
+                    @m_set k_elem,1,6, 0 
+                    @m_set k_elem,2,1, @m_get(k_elem,1,2) 
+                    @m_set k_elem,2,2, (Dpl * c5 / ra3)
+                    @m_set k_elem,2,3, (Dpl * ( c1 * c5 - c4 * c2 ) / ra2)
+                    @m_set k_elem,2,4, 0 
+                    @m_set k_elem,2,5, (- ( Dpl * c5 / ra3 ))
+                    @m_set k_elem,2,6, (Dpl * c2 / ra2)
+                    @m_set k_elem,3,1, @m_get(k_elem,1,3) 
+                    @m_set k_elem,3,2, @m_get(k_elem,2,3) 
+                    @m_set k_elem,3,3, (Dpl * ( c1 * c6 - c3 * c4 ) / ra)
+                    @m_set k_elem,3,4, 0 
+                    @m_set k_elem,3,5, ( - Dpl * c6 / ra2 )
+                    @m_set k_elem,3,6, (Dpl * c3 / ra)
+                    @m_set k_elem,4,1, @m_get(k_elem,1,4) 
+                    @m_set k_elem,4,2, @m_get(k_elem,2,4) 
+                    @m_set k_elem,4,3, @m_get(k_elem,3,4) 
+                    @m_set k_elem,4,4, (( 2 * Math.PI * e * h / ( nombredefixation * ( 1 - nu * nu ) ) ) * ( 0.5 + nu - rb / l + 0.5 * ( ( rb / l ) * ( rb / l ) ) * ( ra * ra / ( rb * rb ) - 1 ) + ( rb * rb / ( l * l ) ) * Math.log( ra / rb ) ))
+                    @m_set k_elem,4,5, 0 
+                    @m_set k_elem,4,6, 0 
+                    @m_set k_elem,5,1, @m_get(k_elem,1,5) 
+                    @m_set k_elem,5,2, @m_get(k_elem,2,5) 
+                    @m_set k_elem,5,3, @m_get(k_elem,3,5) 
+                    @m_set k_elem,5,4, @m_get(k_elem,4,5) 
+                    @m_set k_elem,5,5, (Dpl * c5 / ra3)
+                    @m_set k_elem,5,6, (-Dpl * c2 / ra2)
+                    @m_set k_elem,6,1, @m_get(k_elem,1,6) 
+                    @m_set k_elem,6,2, @m_get(k_elem,2,6) 
+                    @m_set k_elem,6,3, @m_get(k_elem,3,6) 
+                    @m_set k_elem,6,4, @m_get(k_elem,4,6) 
+                    @m_set k_elem,6,5, @m_get(k_elem,5,6) 
+                    @m_set k_elem,6,6, (Dpl * ( c2 * c9 - c8 * c3 ) / rb)
                     
                     Pr = math.zeros(6, 6)
                     Pr.subset(math.index(0, 0), 1)
                     Pr.subset(math.index(1, 1), 1)
-                    Pr.subset(math.index(2, 2), -1)
+                    Pr.subset(math.index(2, 2), (-1))
                     Pr.subset(math.index(3, 3), 1)
                     Pr.subset(math.index(4, 4), 1)
-                    Pr.subset(math.index(5, 5), -1)
+                    Pr.subset(math.index(5, 5), (-1))
                     
-#                     Pr_transpose = math.transpose(Pr)
-#                     k_presque_global = math.multiply(Pr_transpose, k_elem)
-#                     @k_global = math.multiply(k_presque_global, Pr)
                     @k_global = @m_change_rep Pr, k_elem
 
                 when 2
                     P = math.zeros(6, 6)
-                    P.subset(math.index(0, 1), -1)
+                    P.subset(math.index(0, 1), (-1))
                     P.subset(math.index(1, 0), 1)
                     P.subset(math.index(2, 2), 1)
-                    P.subset(math.index(3, 4), -1)
+                    P.subset(math.index(3, 4), (-1))
                     P.subset(math.index(4, 3), 1)
                     P.subset(math.index(5, 5), 1)
                     
@@ -108,77 +126,67 @@ class BrideICAAssemblage extends MatriceItem
                     nu = elem[i - 1].nu
                     t = elem[i - 1].geom3
 
-                    k_elem = math.matrix( [ [ nombredefixation * ( 1 / ( elem[i - 1].geom2 ) ),
-                                              Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                              1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                              -( nombredefixation * ( 1 / ( elem[i - 1].geom2 ) ) ),
-                                              Math.PI * E * t / ( 1 - nu * nu ) * nu, 
-                                              -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu ],
-                                            
-                                            [ Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                              2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0,
-                                              1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                              - Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                              1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 9 * L * L * L * L - 70 * t * t * r0 * r0 ) / ( L * L * L ) / r0,
-                                              -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0 ],
-                                            
-                                            [ 1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                              1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                              2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0,
-                                              -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                              1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                              -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 3 * L * L * L * L - 70 * t * t * r0 * r0 ) / L / r0 ],
-                                            
-                                            [ -( nombredefixation * ( 1 / ( elem[i - 1].geom2 ) ) ),
-                                              - Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                              -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                              nombredefixation * ( 1 / ( elem[i - 1].geom2 ) ),
-                                              - Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                              1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu ],
-                                            
-                                            [ Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                              1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 9 * L * L * L * L - 70 * t * t * r0 * r0 ) / ( L * L * L ) / r0,
-                                              1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                              - Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                              2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0,
-                                              - 1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0 ],
-                                            
-                                            [ -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                              -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                              -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 3 * L * L * L * L - 70 * t * t * r0 * r0 ) / L / r0,
-                                              1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                              - 1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                              2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0 ]
-                                        ] )
+                    k_elem = math.zeros(6, 6)
+                    
+                    @m_set k_elem,1,1, (nombredefixation * ( 1 / ( elem[i - 1].geom2 ) ))
+                    @m_set k_elem,1,2, (Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                    @m_set k_elem,1,3, (1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu)
+                    @m_set k_elem,1,4, (- @m_get(k_elem,1,1)) 
+                    @m_set k_elem,1,5, (Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                    @m_set k_elem,1,6, (-1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu) 
+                    @m_set k_elem,2,1, @m_get(k_elem,1,2) 
+                    @m_set k_elem,2,2, (2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                    @m_set k_elem,2,3, (1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                    @m_set k_elem,2,4, (- Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                    @m_set k_elem,2,5, (1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 9 * L * L * L * L - 70 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                    @m_set k_elem,2,6, (-1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                    @m_set k_elem,3,1, @m_get(k_elem,1,3) 
+                    @m_set k_elem,3,2, @m_get(k_elem,2,3) 
+                    @m_set k_elem,3,3, (2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0)
+                    @m_set k_elem,3,4, (-1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu)
+                    @m_set k_elem,3,5, (1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                    @m_set k_elem,3,6, (-1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 3 * L * L * L * L - 70 * t * t * r0 * r0 ) / L / r0)
+                    @m_set k_elem,4,1, @m_get(k_elem,1,4) 
+                    @m_set k_elem,4,2, @m_get(k_elem,2,4) 
+                    @m_set k_elem,4,3, @m_get(k_elem,3,4) 
+                    @m_set k_elem,4,4, @m_get(k_elem,1,1)
+                    @m_set k_elem,4,5, (- Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                    @m_set k_elem,4,6, (1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu) 
+                    @m_set k_elem,5,1, @m_get(k_elem,1,5) 
+                    @m_set k_elem,5,2, @m_get(k_elem,2,5) 
+                    @m_set k_elem,5,3, @m_get(k_elem,3,5) 
+                    @m_set k_elem,5,4, @m_get(k_elem,4,5) 
+                    @m_set k_elem,5,5, (2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                    @m_set k_elem,5,6, (- 1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                    @m_set k_elem,6,1, @m_get(k_elem,1,6) 
+                    @m_set k_elem,6,2, @m_get(k_elem,2,6) 
+                    @m_set k_elem,6,3, @m_get(k_elem,3,6) 
+                    @m_set k_elem,6,4, @m_get(k_elem,4,6) 
+                    @m_set k_elem,6,5, @m_get(k_elem,5,6) 
+                    @m_set k_elem,6,6, (2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0)
                     
                     k_elem = math.divide(k_elem, nombredefixation)
-                    P_transpose = math.transpose(P)
                     
                     if noeud[elem[i - 1].noeud1 - 1].z < noeud[elem[i - 1].noeud2 - 1].z
-                        k_presque_global = math.multiply(P_transpose, k_elem)
-                        @k_global = math.multiply(k_presque_global, P)
+                        @k_global = @m_change_rep P, k_elem
                                                 
                     else if noeud[elem[i - 1].noeud1 - 1].z > noeud[elem[i - 1].noeud2 - 1].z
                         P2 = math.zeros(6, 6)
                         P2.subset(math.index(0, 0), 1)
-                        P2.subset(math.index(1, 1), -1)
-                        P2.subset(math.index(2, 2), -1)
+                        P2.subset(math.index(1, 1), (-1))
+                        P2.subset(math.index(2, 2), (-1))
                         P2.subset(math.index(3, 3), 1)
-                        P2.subset(math.index(4, 4), -1)
-                        P2.subset(math.index(5, 5), -1)
-                        k_global1 = math.multiply(P2, P_transpose)
-                        k_global2 = math.multiply(k_global1, k_elem)
-                        k_global3 = math.multiply(k_global2, P)
-                        @k_global = math.multiply(k_global3, P2)
-                    
-                    
+                        P2.subset(math.index(4, 4), (-1))
+                        P2.subset(math.index(5, 5), (-1))
+                        k_temp = @m_change_rep P, k_elem
+                        @k_global = @m_change_rep P2, k_temp
                     
                 when 3
                     P = math.zeros(6, 6)
-                    P.subset(math.index(0, 1), -1)
+                    P.subset(math.index(0, 1), (-1))
                     P.subset(math.index(1, 0), 1)
                     P.subset(math.index(2, 2), 1)
-                    P.subset(math.index(3, 4), -1)
+                    P.subset(math.index(3, 4), (-1))
                     P.subset(math.index(4, 3), 1)
                     P.subset(math.index(5, 5), 1)
                     
@@ -189,54 +197,46 @@ class BrideICAAssemblage extends MatriceItem
                     t = elem[i - 1].geom3
                     
                     if noeud[elem[i - 1].noeud1 - 1].z < noeud[elem[i - 1].noeud2 - 1].z
-                        k_elem = math.matrix( [ [ 2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0,
-                                                 Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                 1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                 -2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0,
-                                                 Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                 -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu ],
+                        k_elem = math.zeros(6, 6)
                         
-                                                [ Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0,
-                                                  1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                                  - Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 9 * L * L * L * L - 70 * t * t * r0 * r0 ) / ( L * L * L ) / r0,
-                                                  -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu ],
-                                              
-                                                [ 1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                                  2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0,
-                                                  -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                                  -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 3 * L * L * L * L - 70 * t * t * r0 * r0 ) / L / r0 ],
-                                                
-                                                [ -2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0,
-                                                  - Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0,
-                                                  - Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu ],
-                                                
-                                                [ Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 9 * L * L * L * L - 70 * t * t * r0 * r0 ) / ( L * L * L ) / r0,
-                                                  1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                                  - Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0,
-                                                  - 1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0 ],
-                                                
-                                                [ -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 3 * L * L * L * L - 70 * t * t * r0 * r0 ) / L / r0,
-                                                  -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu ,
-                                                  - 1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                                  2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0 ]      
-                                            ] )
+                        @m_set k_elem,1,1, (2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0)
+                        @m_set k_elem,1,2, (Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                        @m_set k_elem,1,3, (1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu)
+                        @m_set k_elem,1,4, (-2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0) 
+                        @m_set k_elem,1,5, (Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                        @m_set k_elem,1,6, (-1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu) 
+                        @m_set k_elem,2,1, @m_get(k_elem,1,2) 
+                        @m_set k_elem,2,2, (2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                        @m_set k_elem,2,3, (1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,2,4, (- Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                        @m_set k_elem,2,5, (1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 9 * L * L * L * L - 70 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                        @m_set k_elem,2,6, (-1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,3,1, @m_get(k_elem,1,3) 
+                        @m_set k_elem,3,2, @m_get(k_elem,2,3) 
+                        @m_set k_elem,3,3, (2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0)
+                        @m_set k_elem,3,4, (-1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu)
+                        @m_set k_elem,3,5, (1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,3,6, (-1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 3 * L * L * L * L - 70 * t * t * r0 * r0 ) / L / r0)
+                        @m_set k_elem,4,1, @m_get(k_elem,1,4) 
+                        @m_set k_elem,4,2, @m_get(k_elem,2,4) 
+                        @m_set k_elem,4,3, @m_get(k_elem,3,4) 
+                        @m_set k_elem,4,4, (2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0)
+                        @m_set k_elem,4,5, (- Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                        @m_set k_elem,4,6, (1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu) 
+                        @m_set k_elem,5,1, @m_get(k_elem,1,5) 
+                        @m_set k_elem,5,2, @m_get(k_elem,2,5) 
+                        @m_set k_elem,5,3, @m_get(k_elem,3,5) 
+                        @m_set k_elem,5,4, @m_get(k_elem,4,5) 
+                        @m_set k_elem,5,5, (2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                        @m_set k_elem,5,6, (- 1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,6,1, @m_get(k_elem,1,6) 
+                        @m_set k_elem,6,2, @m_get(k_elem,2,6) 
+                        @m_set k_elem,6,3, @m_get(k_elem,3,6) 
+                        @m_set k_elem,6,4, @m_get(k_elem,4,6) 
+                        @m_set k_elem,6,5, @m_get(k_elem,5,6) 
+                        @m_set k_elem,6,6, (2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0)                    
                         
                         k_elem = math.divide(k_elem, nombredefixation)
-                        
-#                         P_transpose = math.transpose(P)
-#                         k_presque_global = math.multiply(P_transpose, k_elem)
-#                         @k_global = math.multiply(k_presque_global, P)
                         @k_global = @m_change_rep P, k_elem
                         
                     else if noeud[elem[i - 1].noeud1 - 1].z > noeud[elem[i - 1].noeud2 - 1].z
@@ -248,61 +248,54 @@ class BrideICAAssemblage extends MatriceItem
                         P.subset(math.index(4, 3), 1)
                         P.subset(math.index(5, 5), 1)
                         
-                        k_elem = math.matrix( [ [ 2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0,
-                                                  Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  -2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0,
-                                                  Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu ],
-                                                
-                                                [ -Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L* L + 35 * t * t *r0 * r0 ) / L * L * L / r0,
-                                                  -1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                                  Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  -1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( -9 * L * L * L * L + 70 * t * t * r0 * r0 ) / L * L * L / r0,
-                                                  -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( -13 * L * L * L * L + 210 * t * t * r0 * r0 ) / L * L / r0 ],
-                                                
-                                                [ 1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  -1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                                  2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0,
-                                                  -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( -13 * L * L * L * L + 210 * t * t * r0 * r0 ) / L * L / r0,
-                                                  1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( -3 * L * L * L * L + 70 * t * t * r0 * r0 ) / L / r0 ],
-                                                
-                                                [ -2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0,
-                                                  Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0,
-                                                  Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu ],
-                                                
-                                                [ -Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  -1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( -9 * L * L * L * L + 70 * t * t * r0 * r0 ) / L * L * L / r0,
-                                                  -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( -13 * L * L * L * L + 210 * t * t * r0 * r0 ) / L * L / r0,
-                                                  Math.PI * E * t / ( 1 - nu * nu ) * nu,
-                                                  2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L* L + 35 * t * t *r0 * r0 ) / L * L * L / r0,
-                                                  1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0 ],
-                                                
-                                                [ -1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  -1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( -13 * L * L * L * L + 210 * t * t * r0 * r0 ) / L * L / r0,
-                                                  1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( -3 * L * L * L * L + 70 * t * t * r0 * r0 ) / L / r0,
-                                                  1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu,
-                                                  1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0,
-                                                  2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0 ]
-                                            ] )
+                        k_elem = math.zeros(6, 6)
+                        
+                        @m_set k_elem,1,1, (2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0)
+                        @m_set k_elem,1,2, (- Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                        @m_set k_elem,1,3, (1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu)
+                        @m_set k_elem,1,4, (-2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0) 
+                        @m_set k_elem,1,5, (- Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                        @m_set k_elem,1,6, (-1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu) 
+                        @m_set k_elem,2,1, @m_get(k_elem,1,2) 
+                        @m_set k_elem,2,2, (2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                        @m_set k_elem,2,3, (- 1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,2,4, (Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                        @m_set k_elem,2,5, (- 1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 9 * L * L * L * L - 70 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                        @m_set k_elem,2,6, (- 1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,3,1, @m_get(k_elem,1,3) 
+                        @m_set k_elem,3,2, @m_get(k_elem,2,3) 
+                        @m_set k_elem,3,3, (2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0)
+                        @m_set k_elem,3,4, (- 1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu)
+                        @m_set k_elem,3,5, (1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,3,6, (1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 3 * L * L * L * L - 70 * t * t * r0 * r0 ) / L / r0)
+                        @m_set k_elem,4,1, @m_get(k_elem,1,4) 
+                        @m_set k_elem,4,2, @m_get(k_elem,2,4) 
+                        @m_set k_elem,4,3, @m_get(k_elem,3,4) 
+                        @m_set k_elem,4,4, (2 * Math.PI * E * t / ( 1 - nu * nu ) / L * r0)
+                        @m_set k_elem,4,5, (Math.PI * E * t / ( 1 - nu * nu ) * nu)
+                        @m_set k_elem,4,6, (1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu) 
+                        @m_set k_elem,5,1, @m_get(k_elem,1,5) 
+                        @m_set k_elem,5,2, @m_get(k_elem,2,5) 
+                        @m_set k_elem,5,3, @m_get(k_elem,3,5) 
+                        @m_set k_elem,5,4, @m_get(k_elem,4,5) 
+                        @m_set k_elem,5,5, (2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                        @m_set k_elem,5,6, (1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,6,1, @m_get(k_elem,1,6) 
+                        @m_set k_elem,6,2, @m_get(k_elem,2,6) 
+                        @m_set k_elem,6,3, @m_get(k_elem,3,6) 
+                        @m_set k_elem,6,4, @m_get(k_elem,4,6) 
+                        @m_set k_elem,6,5, @m_get(k_elem,5,6) 
+                        @m_set k_elem,6,6, (2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0)                            
                                                 
                         k_elem = math.divide(k_elem, nombredefixation)
-                        
-#                         P_transpose = math.transpose(P)
-#                         k_presque_global = math.multiply(P_transpose, k_elem)
-#                         @k_global = math.multiply(k_presque_global, P) 
                         @k_global = @m_change_rep P, k_elem
+                        
                 when 4
                     P = math.zeros(6, 6)
-                    P.subset(math.index(0, 1), -1)
+                    P.subset(math.index(0, 1), (-1))
                     P.subset(math.index(1, 0), 1)
                     P.subset(math.index(2, 2), 1)
-                    P.subset(math.index(3, 4), -1)
+                    P.subset(math.index(3, 4), (-1))
                     P.subset(math.index(4, 3), 1)
                     P.subset(math.index(5, 5), 1)
                     L = ( Math.abs(noeud[elem[i - 1].noeud2 - 1].z - noeud[elem[i - 1].noeud1 - 1].z ) )
@@ -321,9 +314,7 @@ class BrideICAAssemblage extends MatriceItem
                             r : r0
                         k_elem = calcul_k_cone_incline1.k_elem
                         k_elem = math.divide(k_elem, nombredefixation)
-#                         P_transpose = math.transpose(P)
-#                         k_presque_global = math.multiply(P_transpose, k_elem)
-#                         @k_global = math.multiply(k_presque_global, P)
+
                         @k_global = @m_change_rep P, k_elem
                         
 #                         console.log "k_elem = " + k_elem
@@ -338,9 +329,6 @@ class BrideICAAssemblage extends MatriceItem
                         k_elem = calcul_k_cone_incline2.k_elem
                         k_elem = math.divide(k_elem, nombredefixation)
                         
-#                         P_transpose = math.transpose(P)
-#                         k_presque_global = math.multiply(P_transpose, k_elem)
-#                         @k_global = math.multiply(k_presque_global, P)
                         @k_global = @m_change_rep P, k_elem
                     
                 when 5
@@ -349,35 +337,64 @@ class BrideICAAssemblage extends MatriceItem
                     S = elem[i - 1].geom1
                     I = elem[i - 1].geom2
                     L = Math.abs(noeud[elem[i - 1].noeud1 - 1].z - noeud[elem[i - 1].noeud2 - 1].z)
-                    test = []
-                    test.push [E * S / L, 0, 0, -E * S / L, 0, 0]
-                    test.push [0, 12 * E * I / ( L * L * L ), 6 * E * I / ( L * L ), 0, -12 * E * I / ( L * L * L ), 6 * E * I / ( L * L )]
-                    test.push [0, 6 * E * I / ( L * L ), 4 * E * I / L, 0, -6 * E * I / ( L * L ), 2 * E * I / (L)]
-                    test.push [-E * S / L, 0, 0, E * S / L, 0, 0]
-                    test.push [0, -12 * E * I / (L * L * L), -6 * E * I / ( L * L ), 0, 12 * E * I / ( L * L * L ), -6 * E * I / ( L * L )]
-                    test.push [0, 6 * E * I / ( L * L ), 2 * E * I / L, 0, -6 * E * I / ( L * L ), 4 * E * I / L]     
-                    k_elem = math.matrix(test)
+                    
+                    k_elem = math.zeros(6, 6)
+                    
+                    @m_set k_elem,1,1, (E * S / L)
+                    @m_set k_elem,1,2, 0
+                    @m_set k_elem,1,3, 0
+                    @m_set k_elem,1,4, (- E * S / L) 
+                    @m_set k_elem,1,5, 0
+                    @m_set k_elem,1,6, 0
+                    @m_set k_elem,2,1, @m_get(k_elem,1,2) 
+                    @m_set k_elem,2,2, (12 * E * I / ( L * L * L ))
+                    @m_set k_elem,2,3, (6 * E * I / ( L * L ))
+                    @m_set k_elem,2,4, 0
+                    @m_set k_elem,2,5, (-12 * E * I / ( L * L * L ))
+                    @m_set k_elem,2,6, (6 * E * I / ( L * L ))
+                    @m_set k_elem,3,1, @m_get(k_elem,1,3) 
+                    @m_set k_elem,3,2, @m_get(k_elem,2,3) 
+                    @m_set k_elem,3,3, (4 * E * I / L)
+                    @m_set k_elem,3,4, 0
+                    @m_set k_elem,3,5, (-6 * E * I / ( L * L ))
+                    @m_set k_elem,3,6, (2 * E * I / L)
+                    @m_set k_elem,4,1, @m_get(k_elem,1,4) 
+                    @m_set k_elem,4,2, @m_get(k_elem,2,4) 
+                    @m_set k_elem,4,3, @m_get(k_elem,3,4) 
+                    @m_set k_elem,4,4, (E * S / L)
+                    @m_set k_elem,4,5, 0
+                    @m_set k_elem,4,6, 0
+                    @m_set k_elem,5,1, @m_get(k_elem,1,5) 
+                    @m_set k_elem,5,2, @m_get(k_elem,2,5) 
+                    @m_set k_elem,5,3, @m_get(k_elem,3,5) 
+                    @m_set k_elem,5,4, @m_get(k_elem,4,5) 
+                    @m_set k_elem,5,5, (12 * E * I / ( L * L * L ))
+                    @m_set k_elem,5,6, (-6 * E * I / ( L * L ))
+                    @m_set k_elem,6,1, @m_get(k_elem,1,6) 
+                    @m_set k_elem,6,2, @m_get(k_elem,2,6) 
+                    @m_set k_elem,6,3, @m_get(k_elem,3,6) 
+                    @m_set k_elem,6,4, @m_get(k_elem,4,6) 
+                    @m_set k_elem,6,5, @m_get(k_elem,5,6) 
+                    @m_set k_elem,6,6, (4 * E * I / L)                       
+                    
                     if ((noeud[elem[i - 1].noeud1 - 1].z - noeud[elem[i - 1].noeud2 - 1].z) < 0)
                         pb = math.zeros(6, 6)
                         pb.subset(math.index(0, 1), 1)
-                        pb.subset(math.index(1, 0), -1)
-                        pb.subset(math.index(2, 2), -1)
+                        pb.subset(math.index(1, 0), (-1))
+                        pb.subset(math.index(2, 2), (-1))
                         pb.subset(math.index(3, 4), 1)
-                        pb.subset(math.index(4, 3), -1)
-                        pb.subset(math.index(5, 5), -1)
+                        pb.subset(math.index(4, 3), (-1))
+                        pb.subset(math.index(5, 5), (-1))
                         
                     else
                         pb = math.zeros(6, 6)
-                        pb.subset(math.index(0, 1), -1)
+                        pb.subset(math.index(0, 1), (-1))
                         pb.subset(math.index(1, 0), 1)
-                        pb.subset(math.index(2, 2), -1)
-                        pb.subset(math.index(3, 4), -1)
+                        pb.subset(math.index(2, 2), (-1))
+                        pb.subset(math.index(3, 4), (-1))
                         pb.subset(math.index(4, 3), 1)
-                        pb.subset(math.index(5, 5), -1)
+                        pb.subset(math.index(5, 5), (-1))
                     
-#                     pb_transpose = math.transpose(pb)
-#                     k_presque_global = math.multiply(pb_transpose, k_elem)
-#                     @k_global = math.multiply(k_presque_global, pb)
                     @k_global = @m_change_rep pb, k_elem
                     @k_poutre = k_elem
             
@@ -386,7 +403,7 @@ class BrideICAAssemblage extends MatriceItem
                     a = 3 * ( elem[i - 1].noeud1 - 1 ) + u
                 else
                     a = 3 * ( elem[i - 1].noeud2 - 1 ) + ( u - 3 )
-                for j in [1.. 6]
+                for j in [1 .. 6]
                     if j <= 3
                         b = 3 * ( elem[i - 1].noeud1 - 1 ) + j
                     else
@@ -394,6 +411,8 @@ class BrideICAAssemblage extends MatriceItem
 #                     matrice_globale.subset(math.index(a-1, b-1), matrice_globale.subset(math.index(a-1, b-1)) + @k_global.subset(math.index(u-1, j-1)))
                     @m_set matrice_globale, a, b, ( @m_get(matrice_globale, a, b) + @m_get(@k_global, u, j) )
 
+        console.log @m_get matrice_globale,7,7
+        console.log @m_get matrice_globale,9,9
         
 #         ###################################################################################################
 #         ######################### FIN de l'assemblage de la matrice rigidite globale !! ###################

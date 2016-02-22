@@ -108,7 +108,12 @@ class BrideICA2ComputeItem extends TreeItem
             assemblage = new BrideICAAssemblage @_children
 #             console.log assemblage.k_poutre
 #             console.log assemblage.effort
-#             console.log assemblage.matrice_globale4            
+#             console.log assemblage.matrice_globale4
+#             console.log assemblage.m_get assemblage.matrice_globale4,215,215       
+#             console.log assemblage.m_get assemblage.matrice_globale4,230,230       
+#             console.log assemblage.m_get assemblage.matrice_globale4,240,240       
+            console.log "r = " + assemblage.m_sum assemblage.matrice_globale4
+            
             
             resolv = new BrideICAResolve @_children, assemblage, ForceAxiale, U_resultat2
             console.log "fin du calcul !"
