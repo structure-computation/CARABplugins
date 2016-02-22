@@ -98,6 +98,7 @@ class BrideICA2ComputeItem extends TreeItem
         @add_child calcul_contact
         
     calcul_assemblage: ( ) ->
+        console.log "debut du calcul..."
 #         console.log @_children[0].chargement.Fe_tension.get()
 #         console.log @_children[0].chargement.Pas_de_chargement.get()
 #         console.log (@_children[0].chargement.Fe_tension.get()/@_children[0].chargement.Pas_de_chargement.get())
@@ -107,6 +108,8 @@ class BrideICA2ComputeItem extends TreeItem
             assemblage = new BrideICAAssemblage @_children
 #             console.log assemblage.k_poutre
 #             console.log assemblage.effort
-#             console.log assemblage.matrice_globale4
+#             console.log assemblage.matrice_globale4            
+            
             resolv = new BrideICAResolve @_children, assemblage, ForceAxiale, U_resultat2
+            console.log "fin du calcul !"
             break

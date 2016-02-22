@@ -16,7 +16,7 @@ class BrideICAResolve extends MatriceItem
     
     resolve: ( ) ->
         #assemblage
-        matrice_globale4 = @assemblage.matrice_globale4
+        matrice_globale4 = @m_copy @assemblage.matrice_globale4
         effort = @assemblage.effort
         k_poutre =  @assemblage.k_poutre
         
@@ -96,44 +96,43 @@ class BrideICAResolve extends MatriceItem
         #effort(3*wd2-1)= 1*precontrainte;
         
         length_effort = @m_length(effort)
-        @m_set effort, length_effort - 1, 1, 1*precontrainte
-        @m_set effort, length_effort - 4, 1, -1*precontrainte
+        @m_set effort, (length_effort - 1), 1, (1*precontrainte)
+        @m_set effort, (length_effort - 4), 1, (-1*precontrainte)
 
         contact_actif = [1 .. contact.length]
         matrice = @ajout_contact(matrice_globale5, contact_actif, k_contact, contact)
-        
        
         #--------------------------------------
         #    Tout ce qui est bloquage
         #--------------------------------------
         
-        effort = @m_pop_lin effort, 3*(winf-1)+3
-        effort = @m_pop_lin effort, 3*(winf-1)+2
-        effort = @m_pop_lin effort, 3*(winf-1)+1
+        effort = @m_pop_lin effort, (3*(winf-1)+3)
+        effort = @m_pop_lin effort, (3*(winf-1)+2)
+        effort = @m_pop_lin effort, (3*(winf-1)+1)
         
-        matrice = @m_pop_lin matrice, 3*(winf-1)+3
-        matrice = @m_pop_lin matrice, 3*(winf-1)+2
-        matrice = @m_pop_lin matrice, 3*(winf-1)+1
+        matrice = @m_pop_lin matrice, (3*(winf-1)+3)
+        matrice = @m_pop_lin matrice, (3*(winf-1)+2)
+        matrice = @m_pop_lin matrice, (3*(winf-1)+1)
         
-        matrice = @m_pop_col matrice, 3*(winf-1)+3
-        matrice = @m_pop_col matrice, 3*(winf-1)+2
-        matrice = @m_pop_col matrice, 3*(winf-1)+1
+        matrice = @m_pop_col matrice, (3*(winf-1)+3)
+        matrice = @m_pop_col matrice, (3*(winf-1)+2)
+        matrice = @m_pop_col matrice, (3*(winf-1)+1)
         
-        effort = @m_pop_lin effort, 3*(wsup-1)+1
-        matrice = @m_pop_lin matrice, 3*(wsup-1)+1
-        matrice = @m_pop_col matrice, 3*(wsup-1)+1
+        effort = @m_pop_lin effort, (3*(wsup-1)+1)
+        matrice = @m_pop_lin matrice, (3*(wsup-1)+1)
+        matrice = @m_pop_col matrice, (3*(wsup-1)+1)
         
         
         matrice_size = math.size(matrice)
         sl = matrice_size.subset(math.index(0))
         sc = matrice_size.subset(math.index(1))
-        console.log  sl
-        console.log  sc
+#         console.log  sl
+#         console.log  sc
         
         effort_size = math.size(effort)
         sle = matrice_size.subset(math.index(0))
         sce = matrice_size.subset(math.index(1))
-        console.log  sle
+#         console.log  sle
         
 #         matrice_size = math.size(effort)
 #         sl1 = matrice_size.subset(math.index(0))
@@ -155,7 +154,8 @@ class BrideICAResolve extends MatriceItem
 #         for i in [1 .. @m_length(matrice)]
 #             @m_set matrice, 3*(wsup-1)+1, i, 0
 #             @m_set matrice, i, 3*(wsup-1)+1, 0
-        
+
+
         
         
         # Pour le test de symetrie:
@@ -181,8 +181,14 @@ class BrideICAResolve extends MatriceItem
         #%%%%%%%%%%%%%%%%%%%%%%%%%%
         #Resolution du systeme F=KU
         #%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+        console.log matrice
+        Inv = math.inv(matrice)
+        console.log Inv
+        console.log math.transpose(effort)
+#         console.log math.det(matrice)
+#         
         U = math.multiply( math.inv(matrice) , effort)
+        console.log math.transpose(U)
         
         
         #Rajout des points bloqués pour retrouver l'indexage initial

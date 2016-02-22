@@ -60,7 +60,12 @@ class MatriceItem extends TreeItem
 
         return m1           
                 
-                
-                
+    m_triu : (m0) ->
+        m1 = @m_copy m0
+        for i in [1 .. @m_length(m0) ]
+            for j in [1 .. @m_length(m0) ]
+                if i > j
+                    @m_set m1, i, j, 0
+        return m1
                 
             
