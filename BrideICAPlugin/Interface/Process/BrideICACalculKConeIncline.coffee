@@ -147,7 +147,7 @@ class BrideICACalculKConeIncline extends MatriceItem
         J = math.add(K, math.transpose(K))
         L = math.subtract(J,I)
         K = math.multiply(2 * Math.PI * E * t / ( 1 - nu * nu ), L)
-        @k_elem = K
+        @k_elem = @m_copy K
 #         console.log K
 #         console.log "k_elem = " + @k_elem
         
