@@ -13,7 +13,6 @@ class BrideICAResolve extends MatriceItem
         if @bride_children?
             @resolve()
     
-    
     resolve: ( ) ->
         #assemblage
         matrice_globale4 = @m_copy @assemblage.matrice_globale4
@@ -101,7 +100,7 @@ class BrideICAResolve extends MatriceItem
 
         contact_actif = [1 .. contact.length]
         matrice = @ajout_contact(matrice_globale5, contact_actif, k_contact, contact)
-       
+
         #--------------------------------------
         #    Tout ce qui est bloquage
         #--------------------------------------
@@ -110,18 +109,17 @@ class BrideICAResolve extends MatriceItem
         effort = @m_pop_lin effort, (3*(winf-1)+2)
         effort = @m_pop_lin effort, (3*(winf-1)+1)
         
-        matrice = @m_pop_lin matrice, (3*(winf-1)+3)
-        matrice = @m_pop_lin matrice, (3*(winf-1)+2)
-        matrice = @m_pop_lin matrice, (3*(winf-1)+1)
-        
         matrice = @m_pop_col matrice, (3*(winf-1)+3)
         matrice = @m_pop_col matrice, (3*(winf-1)+2)
         matrice = @m_pop_col matrice, (3*(winf-1)+1)
         
-        effort = @m_pop_lin effort, (3*(wsup-1)+1)
-        matrice = @m_pop_lin matrice, (3*(wsup-1)+1)
-        matrice = @m_pop_col matrice, (3*(wsup-1)+1)
+        matrice = @m_pop_lin matrice, (3*(winf-1)+3)
+        matrice = @m_pop_lin matrice, (3*(winf-1)+2)
+        matrice = @m_pop_lin matrice, (3*(winf-1)+1)
         
+        effort = @m_pop_lin effort, (3*(wsup-1)+1)
+        matrice = @m_pop_col matrice, (3*(wsup-1)+1)
+        matrice = @m_pop_lin matrice, (3*(wsup-1)+1)
         
         # Pour le test de symetrie:
         # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour l effort
@@ -147,36 +145,159 @@ class BrideICAResolve extends MatriceItem
         #Resolution du systeme F=KU
         #%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#         U = math.multiply( math.inv(matrice) , effort)
-#         console.log math.transpose(U)
-        
-        U = math.lusolve(matrice,effort)
-        console.log math.transpose(U)
+        U = math.multiply( math.inv(matrice), effort)
         
         #Rajout des points bloqués pour retrouver l'indexage initial
-#         U = [ U(1:3*(wsup-1)) ; 0; U(3*(wsup-1)+1:length(U)) ];
         U = @m_push_lin U, (3*(wsup-1)), 0
-#         console.log U
-#         matrice.subset(math.index(i-1,j-1), val)
-#         
-#         
-#         U = [ U(1:3*(winf-1)) ; 0; 0; 0; U(3*(winf-1)+1:length(U)) ];
+        U = @m_push_lin U, (3*(winf-1)), 0
+        U = @m_push_lin U, (3*(winf-1)+1), 0
+        U = @m_push_lin U, (3*(winf-1)+2), 0
+
         # Pour le test de symetrie
         # U=[0;0;0;U];
-        # U=[U(1:3*wsup);0;0;0;U(3*wsup+1:length(U))];     
+        # U=[U(1:3*wsup);0;0;0;U(3*wsup+1:length(U))];    
+               
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #Traitement contact Convergence contact
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
+        #Initialisation
+        contact_actif_next = []
+        for i in [1 .. contact.length]
+            if ( (@m_get(U, (3*contact[i-1].noeudmaitre-1), 1) < 0) and (@m_get(U, (3*contact[i-1].noeudesclave-1), 1) > 0) ) or ( @m_get(U, (3*contact[i-1].noeudmaitre-1), 1) - @m_get(U, (3*contact[i-1].noeudesclave-1), 1) <= epsiloncontact )
+                contact_actif_next.push i
+      
+        #Heredite
+        while sum != 0
+            
+            contact_actif = contact_actif_next
+            matrice = @ajout_contact(matrice_globale5, contact_actif, k_contact, contact)
+            
+            matrice = @m_pop_lin matrice, (3*(winf-1)+3)
+            matrice = @m_pop_lin matrice, (3*(winf-1)+2)
+            matrice = @m_pop_lin matrice, (3*(winf-1)+1)
+            
+            matrice = @m_pop_col matrice, (3*(winf-1)+3)
+            matrice = @m_pop_col matrice, (3*(winf-1)+2)
+            matrice = @m_pop_col matrice, (3*(winf-1)+1)
+            
+            matrice = @m_pop_lin matrice, (3*(wsup-1)+1)
+            matrice = @m_pop_col matrice, (3*(wsup-1)+1)            
+
+            # Pour le test de symetrie:
+            # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
+            # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
+            # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
+            # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
+            # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
+            # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
+            # matrice(1,:)=[]; % On supprime la ligne correspondante
+            # matrice(:,1)=[]; % On supprime la colonne correspodante
+            # matrice(1,:)=[]; % On supprime la ligne correspondante
+            # matrice(:,1)=[]; % On supprime la colonne correspodante
+            # matrice(1,:)=[]; % On supprime la ligne correspondante
+            # matrice(:,1)=[]; % On supprime la colonne correspodante
+            
+            U = math.multiply( math.inv(matrice), effort)
+
+            U = @m_push_lin U, (3*(wsup-1)), 0
+            U = @m_push_lin U, (3*(winf-1)), 0
+            U = @m_push_lin U, (3*(winf-1)), 0
+            U = @m_push_lin U, (3*(winf-1)), 0
+
+            contact_actif_next = []
+            for i in [1 .. contact.length]
+                if ( @m_get(U, (3*contact[i-1].noeudmaitre-1), 1) < 0 and @m_get(U, (3*contact[i-1].noeudesclave-1), 1) > 0 ) or ( @m_get(U, (3*contact[i-1].noeudmaitre-1), 1) - @m_get(U, (3*contact[i-1].noeudesclave-1), 1) <= epsiloncontact )                
+                    contact_actif_next.push i
+            
+            sum = -1    
+            if contact_actif_next.length == contact_actif.length    
+                sum = 0
+                for i in [1 .. contact_actif_next.length]
+                    if contact_actif_next[i-1] != contact_actif[i-1]
+                        sum += 1
+                                    
+        #Déplacement vertical 
+        decal_noeuds = @m_get(U, (@m_length(U)-1), 1) - @m_get(U, (@m_length(U)-4), 1)
         
+        # Pour le test de symetrie:
+        # display('Taille matrice globale 4 : ')
+        # L=length(matrice_globale4)
+        # display('la moitier : ')
+        # l=L/2
+        # A1=matrice_globale4(1:l,1:l);
+        # A2=matrice_globale4(l+1:L,l+1:L);
+        # display('A1 taille:')
+        # size(A1)
+        # display('A2 taille:')
+        # size(A2)
+        # display('A1 et A2 ont meme contenu en valeur absolu :')
+        # 0==sum(sum(abs(full(A1))~=abs(full(A2))))
+        # 
+        # a1=U(1:3:3*wsup);
+        # a2=U(3*wsup+1:3:3*winf);
+        # b1=U(2:3:3*wsup);
+        # b2=U(3*wsup+2:3:3*winf);
+        # c1=U(3:3:3*wsup);
+        # c2=U(3*wsup+3:3:3*winf);
+        # display('Y a t il symetrie des déplacements :')
+        # a1==a2
+        # b1==-b2
+        # c1==-c2
+        # 
+        # sum(a1-a2)/length(a1)
+        # sum(b1+b2)/length(b1)
+        # sum(c1+c2)/length(c1)
+
+
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %%%Calcul des contraintes dans la vis :
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+  
+        dep = math.zeros(1,6)
+        @m_set dep,1,1, (- @m_get(U, (@m_length(U)-7), 1)) 
+        @m_set dep,1,2, (@m_get(U, (@m_length(U)-8), 1)) 
+        @m_set dep,1,3, (- @m_get(U, (@m_length(U)-6), 1)) 
+        @m_set dep,1,4, (- @m_get(U, (@m_length(U)-4), 1)) 
+        @m_set dep,1,5, (@m_get(U, (@m_length(U)-5), 1)) 
+        @m_set dep,1,6, (- @m_get(U, (@m_length(U)-3), 1)) 
         
+        traction_vis1 = @m_get(U, (3*(noeud.length-1) - 1), 1) - @m_get(U, (3*noeud.length - 1), 1)
         
+        #Calcul de F1r,F1z,M1 et de F2r,F2z et de M2
+        force = math.multiply(k_poutre, math.transpose(dep))
         
+        #Calcul des efforts, des moments et des contraintes
+        Effort_axial = math.zeros(1,2)
+        Sigma_axiale = math.zeros(1,2)
+        Moment_flexion = math.zeros(1,2)
+        Sigma_flexion = math.zeros(1,2)
+        Sigma_totale = math.zeros(1,2)
+        Decollement_Rint = math.zeros(1,2)
+        Decollement_Rext = math.zeros(1,2)
         
+        @m_set Effort_axial,1,1, (- @m_get(force,1,1))
+        @m_set Sigma_axiale,1,1, (4 * @m_get(Effort_axial,1,1) / (Math.PI * Diametre_resultat * Diametre_resultat))
+        @m_set Moment_flexion,1,1, ( (@m_get(force,6,1) + @m_get(force,3,1)) / L_serree * hauteur_resultat - @m_get(force,3,1) )
+        @m_set Sigma_flexion,1,1, ( Math.abs( 32 * @m_get(Moment_flexion,1,1) / (Math.PI * Diametre_resultat * Diametre_resultat * Diametre_resultat)))
+        @m_set Sigma_totale,1,1, ( @m_get(Sigma_axiale,1,1) + @m_get(Sigma_flexion,1,1) )
+        @m_set Decollement_Rint,1,1, ( noeud[ contact[ Math.min.apply(Math, contact_actif) - 1].noeudmaitre - 1 ].r )
+        @m_set Decollement_Rext,1,1, ( noeud[ contact[ Math.max.apply(Math, contact_actif) - 1].noeudmaitre - 1 ].r )
+          
+#         console.log Effort_axial
+#         console.log Sigma_axiale
+#         console.log Moment_flexion
+#         console.log Sigma_flexion
+#         console.log Sigma_totale
+#         console.log Decollement_Rint
+#         console.log Decollement_Rext
         
-        
-        
-        
-        
-        
-        
+        # %%%%%%%
+        # %%PLOTS
+        # %%%%%%%
+        @U = new Lst
+        for i in [ 1 .. @m_length(U)]
+            @U.push @m_get(U, i, 1)
         
         
     ajout_contact : (matrice_ajout,contact_actif,k_contact,contact)->
@@ -190,15 +311,15 @@ class BrideICAResolve extends MatriceItem
             @m_set k_ressort, 1, 4, (- @m_get( k_contact, 1, contact_actif[tett-1] )) 
             @m_set k_ressort, 4, 1, (- @m_get( k_contact, 1, contact_actif[tett-1] ))
             @m_set k_ressort, 4, 4, @m_get( k_contact, 1, contact_actif[tett-1] )
-            
+                        
             #Matrice de passage
             pressort = math.zeros(6,6)
             @m_set pressort, 1, 2, 1
-            @m_set pressort, 2, 1, -1
-            @m_set pressort, 3, 3, -1
+            @m_set pressort, 2, 1, (-1)
+            @m_set pressort, 3, 3, (-1)
             @m_set pressort, 4, 5, 1
-            @m_set pressort, 5, 4, -1
-            @m_set pressort, 6, 6, -1
+            @m_set pressort, 5, 4, (-1)
+            @m_set pressort, 6, 6, (-1)
             
             #Matrice dans le repere global
             k_ressort_global = @m_change_rep pressort,k_ressort
@@ -206,9 +327,9 @@ class BrideICAResolve extends MatriceItem
             noeud2 = contact[contact_actif[tett-1]-1].noeudesclave
             
             #Implantation dans la matrice globale
-            @m_set matrice, 3*noeud1-1, 3*noeud1-1, (@m_get(matrice, 3*noeud1-1, 3*noeud1-1) + @m_get(k_ressort_global, 2, 2))
-            @m_set matrice, 3*noeud1-1, 3*noeud2-1, (@m_get(matrice, 3*noeud1-1, 3*noeud2-1) + @m_get(k_ressort_global, 2, 5))
-            @m_set matrice, 3*noeud2-1, 3*noeud1-1, (@m_get(matrice, 3*noeud2-1, 3*noeud1-1) + @m_get(k_ressort_global, 5, 2))
-            @m_set matrice, 3*noeud2-1, 3*noeud2-1, (@m_get(matrice, 3*noeud2-1, 3*noeud2-1) + @m_get(k_ressort_global, 5, 5))
+            @m_set matrice, (3*noeud1-1), (3*noeud1-1), (@m_get(matrice, (3*noeud1-1), (3*noeud1-1)) + @m_get(k_ressort_global, 2, 2))
+            @m_set matrice, (3*noeud1-1), (3*noeud2-1), (@m_get(matrice, (3*noeud1-1), (3*noeud2-1)) + @m_get(k_ressort_global, 2, 5))
+            @m_set matrice, (3*noeud2-1), (3*noeud1-1), (@m_get(matrice, (3*noeud2-1), (3*noeud1-1)) + @m_get(k_ressort_global, 5, 2))
+            @m_set matrice, (3*noeud2-1), (3*noeud2-1), (@m_get(matrice, (3*noeud2-1), (3*noeud2-1)) + @m_get(k_ressort_global, 5, 5))
             
         return matrice

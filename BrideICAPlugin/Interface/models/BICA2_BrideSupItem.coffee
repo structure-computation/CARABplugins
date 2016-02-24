@@ -5,7 +5,7 @@
 
 
 class BICA2_BrideSupItem extends BICA_Base
-    constructor: ( name = "Bride Superieur", params ) ->
+    constructor: ( name = "Bride Superieur", params = {} ) ->
         super()
 
         @_name.set name
@@ -67,7 +67,7 @@ class BICA2_BrideSupItem extends BICA_Base
         
     make_mesh: (  ) ->
         current_point = @mesh.points.length
-        for coord in [ [ @D_int_plaque.get(), 0, 0 ], [ @D_ext_plaque.get(), 0, 0  ], [ @D_ext_plaque.get(), @h_plaque.get(), 0  ], [ @D_int_plaque.get(), @h_plaque.get(), 0  ] ]
+        for coord in [ [ @D_int_plaque.get()/2, 0, 0 ], [ @D_ext_plaque.get()/2, 0, 0  ], [ @D_ext_plaque.get()/2, @h_plaque.get(), 0  ], [ @D_int_plaque.get()/2, @h_plaque.get(), 0  ] ]
             @mesh.add_point coord
         
         @mesh.add_element new Element_BoundedSurf [
@@ -79,7 +79,7 @@ class BICA2_BrideSupItem extends BICA_Base
         
     make_mesh_droite: (  ) ->
         current_point = @mesh_droite.points.length
-        for coord in [ [ @D_int_tube.get(), @h_tube_incline.get() + @h_plaque.get(), 0 ], [ @D_ext_tube.get(), @h_tube_incline.get() + @h_plaque.get(), 0  ], [ @D_ext_tube.get(), @h_tube_incline.get() + @h_tube.get() + @h_plaque.get(), 0  ], [ @D_int_tube.get(), @h_tube_incline.get() + @h_tube.get() + @h_plaque.get(), 0  ] ]
+        for coord in [ [ @D_int_tube.get()/2, @h_tube_incline.get() + @h_plaque.get(), 0 ], [ @D_ext_tube.get()/2, @h_tube_incline.get() + @h_plaque.get(), 0  ], [ @D_ext_tube.get()/2, @h_tube_incline.get() + @h_tube.get() + @h_plaque.get(), 0  ], [ @D_int_tube.get()/2, @h_tube_incline.get() + @h_tube.get() + @h_plaque.get(), 0  ] ]
             @mesh_droite.add_point coord
         
         @mesh_droite.add_element new Element_BoundedSurf [
@@ -91,7 +91,7 @@ class BICA2_BrideSupItem extends BICA_Base
         
     make_mesh_incline: (  ) ->
         current_point = @mesh_incline.points.length
-        for coord in [ [ @D_int_tube.get(), @h_tube_incline.get() + @h_plaque.get(), 0 ], [ @D_ext_tube.get(), @h_tube_incline.get() + @h_plaque.get(), 0  ], [ @D_ext_tube.get() + @h_tube_incline * Math.tan(Math.PI * @angle_tube_incline.get() / 180), @h_plaque.get(), 0  ], [ @D_int_tube.get() + @h_tube_incline * Math.tan(Math.PI * @angle_tube_incline.get() / 180), @h_plaque.get(), 0  ] ]
+        for coord in [ [ @D_int_tube.get()/2, @h_tube_incline.get() + @h_plaque.get(), 0 ], [ @D_ext_tube.get()/2, @h_tube_incline.get() + @h_plaque.get(), 0  ], [ @D_ext_tube.get()/2 + @h_tube_incline * Math.tan(Math.PI * @angle_tube_incline.get() / 180), @h_plaque.get(), 0  ], [ @D_int_tube.get()/2 + @h_tube_incline * Math.tan(Math.PI * @angle_tube_incline.get() / 180), @h_plaque.get(), 0  ] ]
             @mesh_incline.add_point coord
             
         @mesh_incline.add_element new Element_BoundedSurf [

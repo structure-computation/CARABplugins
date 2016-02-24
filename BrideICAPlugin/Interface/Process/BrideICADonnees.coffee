@@ -100,7 +100,7 @@ class BrideICADonnees extends TreeItem
             calage_contact : 0
             Nombre_increments : 40
             hauteur_resultat : ( @h_plaque1.get() + @h_plaque2.get() ) / 2
-            Diametre_resultat : @diametre_nominal + 0
+            Diametre_resultat : @diametre_nominal.get() + 0
             
             coef_mag : if @bride_ica?.figures?.Amplification_deplacement? then @bride_ica.figures.Amplification_deplacement else 1
             maillage_bride : if @bride_ica?.maillage?.Taille_maillage_bride? then @bride_ica.maillage.Taille_maillage_bride else 1
