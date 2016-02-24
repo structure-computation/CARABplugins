@@ -9,74 +9,25 @@ class BrideICA2Item extends TreeItem
         @_name.set name
         @_viewable.set false
         
-#         @add_attr                                # Tous les parametres
-#             bridesup :                                      # Parametres de la Bride et de la Virole Superieur
-#                 D_ext_plaque                : new Val 86
-#                 D_int_plaque                : new Val 57
-#                 h_plaque                    : new Val 3
-#                 D_ext_tube                  : new Val 61
-#                 D_int_tube                  : new Val 57.1
-#                 h_tube_incline              : new Val 60
-#                 angle_tube_incline          : new Val 0
-#                 h_tube                      : new Val 56
-#                 
-#             brideinf :                                      # Parametres de la Bride et de la Virole Inferieur
-#                 D_ext_plaque                : new Val 86
-#                 D_int_plaque                : new Val 57
-#                 h_plaque                    : new Val 3
-#                 D_ext_tube                  : new Val 61
-#                 D_int_tube                  : new Val 57.1
-#                 h_tube_incline              : new Val 60
-#                 angle_tube_incline          : new Val 0
-#                 h_tube                      : new Val 56
-#             
-#             boulon :                                        # Parametres du Trou et du Boulon
-#                 diametre_nominal            : new Val 5
-#                 diametre_tete               : new Val 8.3
-#                 diametre_implantation       : new Val 74
-#                 longueur_filetee            : new Val 0
-#                 longueur_non_filetee        : new Val 6
-#                 nombre_de_fixations         : new Val 20
-#                 diametre_trou_passage       : new Val 5.4
-#                 hauteur_tete                : new Val 5
-#                 
-#             materiaux :                                     # Parametres des Materiaux
-#                 E_bride_sup                 : new Val 205000
-#                 poisson_bride_sup           : new Val 0.3
-#                 E_bride_inf                 : new Val 205000
-#                 poisson_bride_inf           : new Val 0.3
-#                 E_fixation                  : new Val 205000
-#                 poisson_fixation            : new Val 0.3
-#             
-#             chargement :                                    # Parametres des Donnees de Chargement
-#                 Precharge                   : new Val 4100
-#                 Fe_tension                  : new Val 10000
-#                 Pas_de_chargement           : new Val 5
-#                 
-#             maillage :                                      # Parametres des Donnees de Maillage
-#                 Taille_maillage_bride       : new Val 1
-#                 Taille_maillage_virole      : new Val 5
-#             
-#             figures :                                       # Parametres des Donnees de Figures
-#                 Amplification_deplacement   : new Val 1
-       
-       
+ 
         # Appel des differentes Classes + nom + les parametres
         
         @add_child new BICA2_BrideSupItem "Bride Superieur"
         @add_child new BICA2_BrideInfItem "Bride Inferieur"
-        @add_child new BICA2_BoulonItem "Boulon"
-        @add_child new BICA2_MateriauxItem "Donnees Materiaux"
-        @add_child new BICA2_LoadsItem "Donnees Chargement"
-        @add_child new BICA2_MaillagePourMatlabItem "Parametre de Maillage"
-        @add_child new BICA2_FiguresItem "Parametre des Figures"
         
         @add_attr 
             bridesup : @_children[0]
             brideinf : @_children[1]
-            boulon : @_children[2]
-            materiaux : @_children[3]
-            chargement : @_children[4]
-            maillage : @_children[5]
-            figures : @_children[6]
+        
+        @add_child new BICA2_BoulonItem "Boulon", this
+        @add_attr boulon : @_children[2]
+        @add_child new BICA2_MateriauxItem "Donnees Materiaux", this
+        @add_attr materiaux : @_children[3]
+        @add_child new BICA2_LoadsItem "Donnees Chargement", this
+        @add_attr chargement : @_children[4]
+        @add_child new BICA2_MaillagePourMatlabItem "Parametre de Maillage", this
+        @add_attr maillage : @_children[5]
+        @add_child new BICA2_FiguresItem "Parametre des Figures", this
+        @add_attr figures : @_children[6]
+
             

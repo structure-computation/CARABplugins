@@ -121,30 +121,10 @@ class BrideICAResolve extends MatriceItem
         matrice = @m_pop_col matrice, (3*(wsup-1)+1)
         matrice = @m_pop_lin matrice, (3*(wsup-1)+1)
         
-        # Pour le test de symetrie:
-        # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # effort(3*wsup+1,:)=[]; % On supprime la ligne correspondante pour leffort
-        # effort(1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # effort(1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # effort(1,:)=[]; % On supprime la ligne correspondante pour l effort
-        # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
-        # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
-        # matrice(3*wsup+1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,3*wsup+1)=[]; % On supprime la colonne correspodante
-        # matrice(1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,1)=[]; % On supprime la colonne correspodante
-        # matrice(1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,1)=[]; % On supprime la colonne correspodante
-        # matrice(1,:)=[]; % On supprime la ligne correspondante
-        # matrice(:,1)=[]; % On supprime la colonne correspodante
 
         #%%%%%%%%%%%%%%%%%%%%%%%%%%
         #Resolution du systeme F=KU
         #%%%%%%%%%%%%%%%%%%%%%%%%%%
-
         U = math.multiply( math.inv(matrice), effort)
         
         #Rajout des points bloqués pour retrouver l'indexage initial
