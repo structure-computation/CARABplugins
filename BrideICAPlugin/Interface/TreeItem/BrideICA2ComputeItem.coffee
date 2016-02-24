@@ -17,6 +17,7 @@ class BrideICA2ComputeItem extends TreeItem
 #         
 #       Ajout des enfants
         @add_child geometrie
+        @add_output new BrideICAOutputItem @_children
 
     
     display_suppl_context_actions: ( context_action )  ->
@@ -80,6 +81,10 @@ class BrideICA2ComputeItem extends TreeItem
     calcul_donnees: ( )  ->
         donnees = new BrideICADonnees @_children[0]
         @add_child donnees
+        @_output[0].force_axiale.set_params
+            val: 0
+            max: @_children[0].chargement.Fe_tension.get()
+            div: @_children[0].chargement.Pas_de_chargement.get()
     
     calcul_reglages: ( )  ->
         reglages = new BrideICAReglages @_children[0]
@@ -112,9 +117,12 @@ class BrideICA2ComputeItem extends TreeItem
 #             console.log assemblage.m_get assemblage.matrice_globale4,215,215       
 #             console.log assemblage.m_get assemblage.matrice_globale4,230,230       
 #             console.log assemblage.m_get assemblage.matrice_globale4,240,240       
-            console.log "r = " + assemblage.m_sum assemblage.matrice_globale4
+#             console.log "r = " + assemblage.m_sum assemblage.matrice_globale4
             
             
             resolv = new BrideICAResolve @_children, assemblage, ForceAxiale, U_resultat2
-            console.log "fin du calcul !"
+            @_output[0]._U.set resolv.U
+            
+            console.log "fin du calcul pour ForceAxiale = " + ForceAxiale + " !"
             break
+        console.log "fin du calcul !"

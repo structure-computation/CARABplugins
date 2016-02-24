@@ -110,7 +110,7 @@ class BrideICAAssemblage extends MatriceItem
                     Pr.subset(math.index(5, 5), (-1))
                     
                     @k_global = @m_change_rep Pr, k_elem
-
+                    
                 when 2
                     P = math.zeros(6, 6)
                     P.subset(math.index(0, 1), (-1))
@@ -180,7 +180,7 @@ class BrideICAAssemblage extends MatriceItem
                         P2.subset(math.index(5, 5), (-1))
                         k_temp = @m_change_rep P, k_elem
                         @k_global = @m_change_rep P2, k_temp
-                    
+                        
                 when 3
                     P = math.zeros(6, 6)
                     P.subset(math.index(0, 1), (-1))
@@ -238,13 +238,14 @@ class BrideICAAssemblage extends MatriceItem
                         
                         k_elem = math.divide(k_elem, nombredefixation)
                         @k_global = @m_change_rep P, k_elem
+
                         
                     else if noeud[elem[i - 1].noeud1 - 1].z > noeud[elem[i - 1].noeud2 - 1].z
                         P = math.zeros(6, 6)
-                        P.subset(math.index(0, 1), -1)
+                        P.subset(math.index(0, 1), (-1))
                         P.subset(math.index(1, 0), 1)
                         P.subset(math.index(2, 2), 1)
-                        P.subset(math.index(3, 4), -1)
+                        P.subset(math.index(3, 4), (-1))
                         P.subset(math.index(4, 3), 1)
                         P.subset(math.index(5, 5), 1)
                         
@@ -260,14 +261,14 @@ class BrideICAAssemblage extends MatriceItem
                         @m_set k_elem,2,2, (2 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L + 35 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
                         @m_set k_elem,2,3, (- 1 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( 11 * L * L * L * L + 105 * t * t * r0 * r0 ) / ( L * L ) / r0)
                         @m_set k_elem,2,4, (Math.PI * E * t / ( 1 - nu * nu ) * nu)
-                        @m_set k_elem,2,5, (- 1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( 9 * L * L * L * L - 70 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
-                        @m_set k_elem,2,6, (- 1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,2,5, (- 1 / 35 * Math.PI * E * t / ( 1 - nu * nu ) * ( - 9 * L * L * L * L + 70 * t * t * r0 * r0 ) / ( L * L * L ) / r0)
+                        @m_set k_elem,2,6, (- 1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( - 13 * L * L * L * L + 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
                         @m_set k_elem,3,1, @m_get(k_elem,1,3) 
                         @m_set k_elem,3,2, @m_get(k_elem,2,3) 
                         @m_set k_elem,3,3, (2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0)
                         @m_set k_elem,3,4, (- 1 / 6 * Math.PI * E * t / ( 1 - nu * nu ) * L * nu)
-                        @m_set k_elem,3,5, (1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 13 * L * L * L * L - 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
-                        @m_set k_elem,3,6, (1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( 3 * L * L * L * L - 70 * t * t * r0 * r0 ) / L / r0)
+                        @m_set k_elem,3,5, (1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( - 13 * L * L * L * L + 210 * t * t * r0 * r0 ) / ( L * L ) / r0)
+                        @m_set k_elem,3,6, (1 / 210 * Math.PI * E * t / ( 1 - nu * nu ) * ( - 3 * L * L * L * L + 70 * t * t * r0 * r0 ) / L / r0)
                         @m_set k_elem,4,1, @m_get(k_elem,1,4) 
                         @m_set k_elem,4,2, @m_get(k_elem,2,4) 
                         @m_set k_elem,4,3, @m_get(k_elem,3,4) 
@@ -286,10 +287,10 @@ class BrideICAAssemblage extends MatriceItem
                         @m_set k_elem,6,4, @m_get(k_elem,4,6) 
                         @m_set k_elem,6,5, @m_get(k_elem,5,6) 
                         @m_set k_elem,6,6, (2 / 105 * Math.PI * E * t / ( 1 - nu * nu ) * ( L * L * L * L + 35 * t * t * r0 * r0 ) / L / r0)                            
-                                                
+                        
                         k_elem = math.divide(k_elem, nombredefixation)
                         @k_global = @m_change_rep P, k_elem
-                        
+
                 when 4
                     P = math.zeros(6, 6)
                     P.subset(math.index(0, 1), (-1))
@@ -398,6 +399,9 @@ class BrideICAAssemblage extends MatriceItem
                     @k_global = @m_change_rep pb, k_elem
                     @k_poutre = k_elem
             
+            if test? == 1
+                break
+            
             for u in [1 .. 6]
                 if u <= 3
                     a = 3 * ( elem[i - 1].noeud1 - 1 ) + u
@@ -411,8 +415,9 @@ class BrideICAAssemblage extends MatriceItem
 #                     matrice_globale.subset(math.index(a-1, b-1), matrice_globale.subset(math.index(a-1, b-1)) + @k_global.subset(math.index(u-1, j-1)))
                     @m_set matrice_globale, a, b, ( @m_get(matrice_globale, a, b) + @m_get(@k_global, u, j) )
 
-        console.log @m_get matrice_globale,7,7
-        console.log @m_get matrice_globale,9,9
+#         console.log @m_get matrice_globale,7,7
+#         console.log @m_get matrice_globale,9,9
+#         console.log "somme matrice_globale = " + @m_sum matrice_globale
         
 #         ###################################################################################################
 #         ######################### FIN de l'assemblage de la matrice rigidite globale !! ###################
@@ -423,7 +428,7 @@ class BrideICAAssemblage extends MatriceItem
         matrice_globale_size = math.size(matrice_globale)
         matrice_globale_length = matrice_globale_size.subset(math.index(0))
         for i in [ 1 .. matrice_globale_length ]
-            if i != 3 * ( contact[contact.length - 1].noeudmaitre)-2 and i != 3 * ( contact[contact.length - 1].noeudesclave)-2
+            if (i != 3 * ( contact[contact.length - 1].noeudmaitre)-2) and (i != 3 * ( contact[contact.length - 1].noeudesclave)-2)
                 for j in [ 1 .. matrice_globale_length ]
                     if j == 3 * ( contact[contact.length - 1].noeudesclave) - 2
                         @m_set matrice_globale1, i , j, ( @m_get(matrice_globale, i, j) + @m_get(matrice_globale, i, (3 * (contact[contact.length - 1].noeudmaitre)-2)) )
@@ -437,7 +442,6 @@ class BrideICAAssemblage extends MatriceItem
                         @m_set matrice_globale1, i, j, 0
                     else if j == 3 * ( contact[contact.length - 1].noeudesclave ) - 2
                         @m_set matrice_globale1, i, j, ( @m_get(matrice_globale, i, j) + @m_get(matrice_globale, (3 * ( contact[contact.length - 1].noeudmaitre) - 2), (3 * ( contact[contact.length - 1].noeudmaitre ) - 2)) + @m_get(matrice_globale, i, (3 * ( contact[contact.length - 1].noeudmaitre ) - 2)) + @m_get(matrice_globale, (3 * ( contact[contact.length - 1].noeudmaitre) - 2), j) )                   
-
                     else
                         @m_set matrice_globale1, i, j, ( @m_get(matrice_globale, i, j) + @m_get(matrice_globale, (3 * ( contact[contact.length - 1].noeudmaitre) - 2), j) )
             else if i == 3 * ( contact[contact.length - 1].noeudmaitre ) - 2
@@ -445,9 +449,10 @@ class BrideICAAssemblage extends MatriceItem
                     if j == 3 * ( contact[contact.length - 1].noeudmaitre ) - 2
                         @m_set matrice_globale1, i, j, Betta
                     else if j == 3 * ( contact[contact.length - 1].noeudesclave ) - 2
-                        @m_set matrice_globale1, i, j, -Betta
+                        @m_set matrice_globale1, i, j, (-Betta)
                     else
                         @m_set matrice_globale1, i, j, 0  
+
 
         # test
 #         for i in [ 1 .. @m_length matrice_globale ]
@@ -459,11 +464,10 @@ class BrideICAAssemblage extends MatriceItem
 #             if @m_get(matrice_globale1, 46, i) != 0
 #                 console.log i
 #                 console.log @m_get(matrice_globale1, 46, i)
-            
 #         ###################################################################################################
 #         ######################### FIN de l'assemblage de la matrice rigidite globale1!! ###################
 #         ###################################################################################################            
-            
+#         console.log "somme matrice_globale1 = " + @m_sum matrice_globale1
 
         noeud_maitre = wd1
         noeud_esclave = noeud.length - 1
@@ -591,6 +595,8 @@ class BrideICAAssemblage extends MatriceItem
 #                 console.log i
 #                 console.log @m_get(matrice_globale2, 200, i)
         
+#         console.log "somme matrice_globale2 = " + @m_sum matrice_globale2
+        
         # Definition de la liaison glissiere
         # On commence a prendre les cas ou il faut creer un noeud additionel (glissiere-Albin) pour l application de la precontrainte:
         # Liste des cas ou l element poutre rigide (dont un des noeuds est
@@ -708,6 +714,7 @@ class BrideICAAssemblage extends MatriceItem
 #                 console.log "j = " + j
                 @m_set matrice_globale3, a, b, ( @m_get( matrice_globale3, a, b) + @m_get( k_global_poutre, u, j) )
           
+#         console.log "somme matrice_globale3 = " + @m_sum matrice_globale3
 
         #Couplage du noeud d accorchage et du noeud de la poutre suivant les degres de liberte R et Tetta
 
@@ -781,6 +788,7 @@ class BrideICAAssemblage extends MatriceItem
                     else
                         @m_set matrice_globale4, i, j, 0
 
+#         console.log "somme matrice_globale4 = " + @m_sum matrice_globale4
 
         #output
         @matrice_globale4 = matrice_globale4   

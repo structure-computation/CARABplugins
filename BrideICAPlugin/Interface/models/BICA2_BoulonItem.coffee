@@ -87,7 +87,7 @@ class BICA2_BoulonItem extends BICA_Base
                 # Creation du Maillage mesh_tete en donnant 4 Coordonnees
     make_mesh_tete: (  ) ->
         current_point = @mesh_tete.points.length
-        for coord in [ [ @diametre_implantation.get() - @diametre_tete.get() / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get() + @diametre_tete.get() / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get() + @diametre_tete.get() / 2, @hauteur_tete.get(), 0 ], [ @diametre_implantation.get() - @diametre_tete.get() / 2, @hauteur_tete.get(), 0 ] ]
+        for coord in [ [ @diametre_implantation.get()/2 - @diametre_tete.get() / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get()/2 + @diametre_tete.get() / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get()/2 + @diametre_tete.get() / 2, @hauteur_tete.get(), 0 ], [ @diametre_implantation.get()/2 - @diametre_tete.get() / 2, @hauteur_tete.get(), 0 ] ]
             @mesh_tete.add_point coord
             
         @mesh_tete.add_element new Element_BoundedSurf [
@@ -100,7 +100,7 @@ class BICA2_BoulonItem extends BICA_Base
                 # Creation du Maillage mesh_ecrou en donnant 4 Coordonnees
     make_mesh_ecrou: (  ) ->
         current_point = @mesh_ecrou.points.length
-        for coord in [ [ @diametre_implantation.get() - @diametre_tete.get() / 2, -@_brideinf_h_plaque.get(), 0 ], [ @diametre_implantation.get() + @diametre_tete.get() / 2, -@_brideinf_h_plaque.get(), 0 ], [ @diametre_implantation.get() + @diametre_tete.get() / 2, -@hauteur_tete.get(), 0 ], [ @diametre_implantation.get() - @diametre_tete.get() / 2, -@hauteur_tete.get(), 0 ] ]
+        for coord in [ [ @diametre_implantation.get()/2 - @diametre_tete.get() / 2, -@_brideinf_h_plaque.get(), 0 ], [ @diametre_implantation.get()/2 + @diametre_tete.get() / 2, -@_brideinf_h_plaque.get(), 0 ], [ @diametre_implantation.get()/2 + @diametre_tete.get() / 2, -@hauteur_tete.get(), 0 ], [ @diametre_implantation.get()/2 - @diametre_tete.get() / 2, -@hauteur_tete.get(), 0 ] ]
             @mesh_ecrou.add_point coord
             
         @mesh_ecrou.add_element new Element_BoundedSurf [
@@ -114,7 +114,7 @@ class BICA2_BoulonItem extends BICA_Base
 
     make_mesh_vis: (  ) ->
         current_point = @mesh_vis.points.length
-        for coord in [ [ @diametre_implantation.get() - @diametre_nominal.get() / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get() + @diametre_nominal.get() / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get() + @diametre_nominal.get() / 2, -@_brideinf_h_plaque.get() , 0 ], [ @diametre_implantation.get() - @diametre_nominal.get() / 2, -@_brideinf_h_plaque.get() , 0 ] ]
+        for coord in [ [ @diametre_implantation.get()/2 - @diametre_nominal.get() / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get()/2 + @diametre_nominal.get() / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get()/2 + @diametre_nominal.get() / 2, -@_brideinf_h_plaque.get() , 0 ], [ @diametre_implantation.get()/2 - @diametre_nominal.get() / 2, -@_brideinf_h_plaque.get() , 0 ] ]
             @mesh_vis.add_point coord
             
         @mesh_vis.add_element new Element_BoundedSurf [
@@ -128,7 +128,7 @@ class BICA2_BoulonItem extends BICA_Base
     
     make_mesh_ligne: (  ) ->
         current_point = @mesh_ligne.points.length
-        for coord in [ [ @diametre_implantation.get(), @_bridesup_h_plaque.get() + 50, 0 ], [ @diametre_implantation.get(), -@_brideinf_h_plaque.get() - 50, 0  ], ]
+        for coord in [ [ @diametre_implantation.get()/2, @_bridesup_h_plaque.get() + 50, 0 ], [ @diametre_implantation.get()/2, -@_brideinf_h_plaque.get() - 50, 0  ], ]
             @mesh_ligne.add_point coord
         
         @mesh_ligne.add_element new Element_BoundedSurf [
@@ -139,7 +139,7 @@ class BICA2_BoulonItem extends BICA_Base
     
     make_mesh_trou: (  ) ->
         current_point = @mesh_trou.points.length
-        for coord in [ [ @diametre_implantation.get() - @diametre_trou_passage / 2, -@_brideinf_h_plaque.get(), 0 ], [ @diametre_implantation.get() + @diametre_trou_passage / 2, -@_brideinf_h_plaque.get(), 0  ], [ @diametre_implantation.get() + @diametre_trou_passage / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get() - @diametre_trou_passage / 2, @_bridesup_h_plaque.get(), 0 ] ]
+        for coord in [ [ @diametre_implantation.get()/2 - @diametre_trou_passage / 2, -@_brideinf_h_plaque.get(), 0 ], [ @diametre_implantation.get()/2 + @diametre_trou_passage / 2, -@_brideinf_h_plaque.get(), 0  ], [ @diametre_implantation.get()/2 + @diametre_trou_passage / 2, @_bridesup_h_plaque.get(), 0 ], [ @diametre_implantation.get()/2 - @diametre_trou_passage / 2, @_bridesup_h_plaque.get(), 0 ] ]
             @mesh_trou.add_point coord
             
         @mesh_trou.add_element new Element_BoundedSurf [

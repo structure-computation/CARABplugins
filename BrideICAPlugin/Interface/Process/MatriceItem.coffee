@@ -41,8 +41,7 @@ class MatriceItem extends TreeItem
             if i != num_line
                 ii += 1
                 for j in [1 .. sc ]
-                    @m_set  m1, ii, j, @m_get(m0,i,j)
-                    
+                    @m_set m1, ii, j, @m_get(m0,i,j)
         return m1
         
                 
@@ -56,8 +55,7 @@ class MatriceItem extends TreeItem
             if j != num_col
                 jj += 1
                 for i in [1 .. sl ]
-                    @m_set  m1, i, jj, @m_get(m0,i,j)
-
+                    @m_set m1, i, jj, @m_get(m0,i,j)
         return m1   
     
     
@@ -67,10 +65,10 @@ class MatriceItem extends TreeItem
         sc = matrice_size.subset(math.index(1))
         m1 = math.zeros(sl+1, sc)
         for j in [1 .. sc ]
-            @m_set m1, num_lin, j, val
-            for i in [1 .. num_lin-1]
+            @m_set m1, num_lin+1, j, val
+            for i in [1 .. num_lin]
                 @m_set  m1, i, j, @m_get(m0,i,j)
-            for i in [num_lin+1 .. sl+1]
+            for i in [num_lin+2 .. sl+1]
                 @m_set  m1, i, j, @m_get(m0,i-1,j)          
                 
         return m1   
@@ -82,10 +80,10 @@ class MatriceItem extends TreeItem
         sc = matrice_size.subset(math.index(1))
         m1 = math.zeros(sl, sc+1)
         for i in [1 .. sl ]
-            @m_set m1, i, num_col, val
-            for j in [1 .. num_col-1]
+            @m_set m1, i, num_col+1, val
+            for j in [1 .. num_col]
                 @m_set  m1, i, j, @m_get(m0,i,j)
-            for j in [num_col+1 .. sc+1]
+            for j in [num_col+2 .. sc+1]
                 @m_set  m1, i, j, @m_get(m0,i,j-1)          
                 
         return m1                  
