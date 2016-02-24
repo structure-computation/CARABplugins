@@ -20,14 +20,14 @@ class BrideICAOutputItem extends MatriceItem
             canvas_points: []
 
         @bind =>
-            if @_U.has_been_directly_modified() or @facteur_echelle.val.has_been_modified()
+            if @_U.has_been_directly_modified() or @facteur_echelle.val.has_been_modified() or @force_axiale.val.has_been_modified()
                 if @_U.length > 0
                     @render()
 
     render: (  ) ->   
         @canvas_points.clear()
         
-        plot1 = @make_coord @_U
+        plot1 = @make_coord @_U[ @force_axiale.val.get() ]
         red = new Color( 200, 0, 0, 255 )
         blue = new Color( 0, 0, 200, 255 )
         @make_points_from_coord plot1[0], plot1[1], blue   
@@ -35,14 +35,14 @@ class BrideICAOutputItem extends MatriceItem
          
             
     cosmetic_attribute: ( name ) ->
-        super( name ) or ( name in [ "p_mesher" ] )
+        super( name ) or ( name in [ "canvas_points" ] )
         
     make_points_from_coord: ( x, y, color ) ->
         for i in [ 0 .. x.length - 1 ]
-            pm = new CanvasPoint [ x[i], y[i], 0 ],
+            p = new CanvasPoint [ x[i], y[i], 0 ],
                 radius: 2
                 color: color
-            @canvas_points.push pm
+            @canvas_points.push p
    
     make_coord: ( U ) -> 
         noeud = @bride_children[4].noeud.get()

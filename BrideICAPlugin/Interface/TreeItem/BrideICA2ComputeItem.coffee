@@ -83,7 +83,8 @@ class BrideICA2ComputeItem extends TreeItem
         @add_child donnees
         @_output[0].force_axiale.set_params
             val: 0
-            max: @_children[0].chargement.Fe_tension.get()
+            min: 0
+            max: @_children[0].chargement.Pas_de_chargement.get()
             div: @_children[0].chargement.Pas_de_chargement.get()
     
     calcul_reglages: ( )  ->
@@ -121,8 +122,9 @@ class BrideICA2ComputeItem extends TreeItem
             
             
             resolv = new BrideICAResolve @_children, assemblage, ForceAxiale, U_resultat2
-            @_output[0]._U.set resolv.U
+            @_output[0]._U.push resolv.U
             
             console.log "fin du calcul pour ForceAxiale = " + ForceAxiale + " !"
-            break
+#             break
         console.log "fin du calcul !"
+        console.log @_output[0]._U
