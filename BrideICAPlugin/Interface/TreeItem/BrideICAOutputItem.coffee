@@ -17,66 +17,32 @@ class BrideICAOutputItem extends MatriceItem
             _U: new Lst
 
         @add_attr
-            mesh_bride_sup: new Mesh( not_editable: true )    
-            mesh_bride_inf: new Mesh( not_editable: true )  
-            p_mesher: []
-            
-        @mesh_bride_sup.visualization.display_style.set "Wireframe"    
-        @mesh_bride_inf.visualization.display_style.set "Wireframe"   
-
+            canvas_points: []
 
         @bind =>
             if @_U.has_been_directly_modified() or @facteur_echelle.val.has_been_modified()
                 if @_U.length > 0
                     @render()
-                    @draw()
-    
-    draw: ( info ) ->
-        app_data = @get_app_data()
-        sel_items = app_data.selected_tree_items[0]
-        if sel_items?.has_been_directly_modified()
-            if sel_items[ sel_items.length-1 ] == this
-                @colorize "blue"
-            else
-                @colorize() 
 
     render: (  ) ->   
-        @p_mesher.clear()
-        
-        @mesh_bride_sup.points.clear()
-        @mesh_bride_sup._elements.clear()
-        @mesh_bride_inf.points.clear()
-        @mesh_bride_inf._elements.clear()      
+        @canvas_points.clear()
         
         plot1 = @make_coord @_U
-        @make_mesh_from_coord @mesh_bride_sup, plot1[0], plot1[1]   
-        @make_mesh_from_coord @mesh_bride_inf, plot1[2], plot1[3]   
+        red = new Color( 200, 0, 0, 255 )
+        blue = new Color( 0, 0, 200, 255 )
+        @make_points_from_coord plot1[0], plot1[1], blue   
+        @make_points_from_coord plot1[2], plot1[3], red   
          
-    colorize: ( color ) ->
-        for drawable in @sub_canvas_items() when drawable instanceof Mesh
-            if color == "blue"
-                drawable.visualization.line_color.r.val.set 77
-                drawable.visualization.line_color.g.val.set 188
-                drawable.visualization.line_color.b.val.set 233
-            else
-                drawable.visualization.line_color.r.val.set 200
-                drawable.visualization.line_color.g.val.set 0
-                drawable.visualization.line_color.b.val.set 0
             
     cosmetic_attribute: ( name ) ->
-        super( name ) or ( name in [ "mesh_bride_sup", "mesh_bride_inf", "p_mesher" ] )
+        super( name ) or ( name in [ "p_mesher" ] )
         
-    make_mesh_from_coord: ( mesh, x, y ) ->
-        current_point = mesh.points.length
+    make_points_from_coord: ( x, y, color ) ->
         for i in [ 0 .. x.length - 1 ]
-            mesh.add_point [ x[i], y[i], 0 ]
-            pm = new PointMesher [ x[i], y[i], 0 ], 2, 2
-            @p_mesher.push pm
-        
-#         for i in [0 .. mesh.points.length-2 ]
-#             mesh.add_element new Element_Line [ i, i+1 ]
-#         mesh.add_element new Element_Line [ mesh.points.length-1, 0 ]
-        
+            pm = new CanvasPoint [ x[i], y[i], 0 ],
+                radius: 2
+                color: color
+            @canvas_points.push pm
    
     make_coord: ( U ) -> 
         noeud = @bride_children[4].noeud.get()
@@ -114,16 +80,4 @@ class BrideICAOutputItem extends MatriceItem
         false # AppItem
     
     sub_canvas_items: ->
-        @p_mesher
-
-    # pour récupérer le modèle global (TreeAppData) 
-    is_app_data: ( item ) ->
-        if item instanceof TreeAppData
-            return true
-        else
-            return false
-       
-    # pour récupérer le modèle global (TreeAppData) 
-    get_app_data: ->
-        it = @get_parents_that_check @is_app_data
-        return it[ 0 ]  
+        @canvas_points
