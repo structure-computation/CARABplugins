@@ -12,14 +12,14 @@ class BICA2_BrideInfItem extends BICA_Base
         @_viewable.set true
           
         @add_attr
-            D_ext_plaque : if  params?.brideinf?.D_ext_plaque? then params.brideinf.D_ext_plaque else 86
-            D_int_plaque : if  params?.brideinf?.D_int_plaque? then params.brideinf.D_int_plaque else 57
-            h_plaque :     if  params?.brideinf?.h_plaque? then params.brideinf.h_plaque else 3
-            D_ext_tube :   if  params?.brideinf?.D_ext_tube? then params.brideinf.D_ext_tube else 61                                           # Se referer aux commentaires de BICA2_BoulonItem
-            D_int_tube :   if  params?.brideinf?.D_int_tube? then params.brideinf.D_int_tube else 57.1
-            h_tube_incline :  if  params?.brideinf?.h_tube_incline? then params.brideinf.h_tube_incline else 60
-            angle_tube_incline :  if  params?.brideinf?.angle_tube_incline? then params.brideinf.angle_tube_incline else 0
-            h_tube :   if  params?.brideinf?.h_tube? then params.brideinf.h_tube else 56
+            D_ext_plaque :              86
+            D_int_plaque :              57
+            h_plaque :                  3
+            D_ext_tube :                61                                           # Se referer aux commentaires de BICA2_BoulonItem
+            D_int_tube :                57.1
+            h_tube_incline :            60
+            angle_tube_incline :        0
+            h_tube :                    56
             mesh: new Mesh( not_editable: true )
             mesh_droite: new Mesh( not_editable: true )
             mesh_incline: new Mesh( not_editable: true )
