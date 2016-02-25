@@ -5,19 +5,19 @@
 
 
 class BrideICAOutputItem extends MatriceItem
-    constructor: ( @bride_children ) ->
+    constructor: ( name = "Maillage de sortie", @bride_children, @color = "red" ) ->
         super()
 
-        @_name.set "Maillage de sortie"
+        @_name.set name
         @_viewable.set true
           
         @add_attr
             force_axiale: new ConstrainedVal
-            facteur_echelle: new ConstrainedVal( 1, { min: 1, max: 1000 } ) 
+            facteur_echelle: new ConstrainedVal( 1, { min: 1, max: 100 } ) 
             _U: new Lst
 
         @add_attr
-            canvas_points: []
+            _canvas_points: []
 
         @bind =>
             if @_U.has_been_directly_modified() or @facteur_echelle.val.has_been_modified() or @force_axiale.val.has_been_modified()
@@ -25,24 +25,32 @@ class BrideICAOutputItem extends MatriceItem
                     @render()
 
     render: (  ) ->   
-        @canvas_points.clear()
+        @_canvas_points.clear()
         
-        plot1 = @make_coord @_U[ @force_axiale.val.get() ]
-        red = new Color( 200, 0, 0, 255 )
-        blue = new Color( 0, 0, 200, 255 )
-        @make_points_from_coord plot1[0], plot1[1], blue   
-        @make_points_from_coord plot1[2], plot1[3], red   
-         
+        plot = @make_coord @_U[ @force_axiale.val.get() ]
+        
+        if @color == "red"
+            color1 = new Color( 155, 0, 0, 255 )
+            color2 = new Color( 255, 0, 0, 255 )
+        else if @color == "blue"
+            color1 = new Color( 0, 0, 155, 255 )
+            color2 = new Color( 0, 0, 255, 255 )      
+        else
+            color1 = new Color( 0, 0, 0, 255 )
+            color2 = new Color( 0, 0, 0, 255 )         
+            
+        @make_points_from_coord plot[0], plot[1], color1   
+        @make_points_from_coord plot[2], plot[3], color2   
             
     cosmetic_attribute: ( name ) ->
-        super( name ) or ( name in [ "canvas_points" ] )
+        super( name ) or ( name in [ "_canvas_points" ] )
         
     make_points_from_coord: ( x, y, color ) ->
         for i in [ 0 .. x.length - 1 ]
             p = new CanvasPoint [ x[i], y[i], 0 ],
                 radius: 2
                 color: color
-            @canvas_points.push p
+            @_canvas_points.push p
    
     make_coord: ( U ) -> 
         noeud = @bride_children[4].noeud.get()
@@ -80,4 +88,4 @@ class BrideICAOutputItem extends MatriceItem
         false # AppItem
     
     sub_canvas_items: ->
-        @canvas_points
+        @_canvas_points

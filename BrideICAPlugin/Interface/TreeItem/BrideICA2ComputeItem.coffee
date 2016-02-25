@@ -12,14 +12,33 @@ class BrideICA2ComputeItem extends TreeItem
 #       Création des variables en appelant les différentes Classes (BrideICA2Item ayant toutes les variable)
         geometrie = new BrideICA2Item
 #       On met en paramètre le paramètre geometrie qui contient donc toutes les variables utiles pour ces Classes
-        @add_attr
-            in_progress : false
+#         @add_attr
+#             in_progress : false
+#             force_axiale: new ConstrainedVal
+#             facteur_echelle: new ConstrainedVal( 1, { min: 1, max: 100 } ) 
 #         
 #       Ajout des enfants
         @add_child geometrie
-        @add_output new BrideICAOutputItem @_children
+        @add_output new BrideICAOutputItem "Maillage apres serrage", @_children, "red" 
+        @add_output new BrideICAOutputItem "Maillage apres pression", @_children, "blue"
 
-    
+#         @bind =>
+#             if @force_axiale.val.has_been_modified()
+#                 @_output[0]?._force_axiale.set_params
+#                     val: @force_axiale.val.get()
+#                 @_output[1]?._force_axiale.set_params
+#                     val: @force_axiale.val.get()    
+#                 @_output[0]?._force_axiale._signal_change()
+#                 @_output[1]?._force_axiale._signal_change()       
+#                 
+#             if @facteur_echelle.val.has_been_modified()
+#                 @_output[0]?._facteur_echelle.set_params
+#                     val: @facteur_echelle.val.get()      
+#                 @_output[1]?._facteur_echelle.set_params
+#                     val: @facteur_echelle.val.get()
+#                 @_output[0]?._facteur_echelle._signal_change()
+#                 @_output[1]?._facteur_echelle._signal_change()
+                
     display_suppl_context_actions: ( context_action )  ->
 #         context_action.push
 #             txt: "calcul des donnees"
@@ -81,11 +100,21 @@ class BrideICA2ComputeItem extends TreeItem
     calcul_donnees: ( )  ->
         donnees = new BrideICADonnees @_children[0]
         @add_child donnees
+#         @force_axiale.set_params
+#             val: 0
+#             min: 0
+#             max: @_children[0].chargement.Pas_de_chargement.get()
+#             div: @_children[0].chargement.Pas_de_chargement.get()
         @_output[0].force_axiale.set_params
             val: 0
             min: 0
             max: @_children[0].chargement.Pas_de_chargement.get()
             div: @_children[0].chargement.Pas_de_chargement.get()
+        @_output[1].force_axiale.set_params
+            val: 0
+            min: 0
+            max: @_children[0].chargement.Pas_de_chargement.get()
+            div: @_children[0].chargement.Pas_de_chargement.get()    
     
     calcul_reglages: ( )  ->
         reglages = new BrideICAReglages @_children[0]
@@ -122,9 +151,9 @@ class BrideICA2ComputeItem extends TreeItem
             
             
             resolv = new BrideICAResolve @_children, assemblage, ForceAxiale, U_resultat2
-            @_output[0]._U.push resolv.U
+            @_output[0]._U.push resolv.U_serrage
+            @_output[1]._U.push resolv.U_pression
             
             console.log "fin du calcul pour ForceAxiale = " + ForceAxiale + " !"
 #             break
         console.log "fin du calcul !"
-        console.log @_output[0]._U

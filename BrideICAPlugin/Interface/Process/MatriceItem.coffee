@@ -31,6 +31,13 @@ class MatriceItem extends TreeItem
                 @m_set  m1, i, j, @m_get(m0,i,j)
         return m1
      
+    #copy for col vectors
+    v_copy :(m0)->  
+        m1 = math.zeros(@m_length(m0), 1)
+        for i in [1 .. @m_length(m0) ]
+            @m_set  m1, i, 1, @m_get(m0,i,1)
+        return m1     
+     
     m_pop_lin :(m0,num_line)-> 
         matrice_size = math.size(m0)
         sl = matrice_size.subset(math.index(0))

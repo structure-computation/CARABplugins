@@ -77,6 +77,13 @@ class BrideICAResolve extends MatriceItem
 
         #résolution----------------------------------------------------------------------------------------------------------
         
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %                                 SERRAGE
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %                                 SERRAGE
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
+        
         #--------------------------------------
         #    Initialisation effort et contact
         #--------------------------------------
@@ -248,13 +255,13 @@ class BrideICAResolve extends MatriceItem
         force = math.multiply(k_poutre, math.transpose(dep))
         
         #Calcul des efforts, des moments et des contraintes
-        Effort_axial = math.zeros(1,2)
-        Sigma_axiale = math.zeros(1,2)
-        Moment_flexion = math.zeros(1,2)
-        Sigma_flexion = math.zeros(1,2)
-        Sigma_totale = math.zeros(1,2)
-        Decollement_Rint = math.zeros(1,2)
-        Decollement_Rext = math.zeros(1,2)
+        Effort_axial = math.zeros(2,1)
+        Sigma_axiale = math.zeros(2,1)
+        Moment_flexion = math.zeros(2,1)
+        Sigma_flexion = math.zeros(2,1)
+        Sigma_totale = math.zeros(2,1)
+        Decollement_Rint = math.zeros(2,1)
+        Decollement_Rext = math.zeros(2,1)
         
         @m_set Effort_axial,1,1, (- @m_get(force,1,1))
         @m_set Sigma_axiale,1,1, (4 * @m_get(Effort_axial,1,1) / (Math.PI * Diametre_resultat * Diametre_resultat))
@@ -275,10 +282,231 @@ class BrideICAResolve extends MatriceItem
         # %%%%%%%
         # %%PLOTS
         # %%%%%%%
-        @U = new Lst
+        @U_serrage = new Lst
         for i in [ 1 .. @m_length(U)]
-            @U.push @m_get(U, i, 1)
+            @U_serrage.push @m_get(U, i, 1)
         
+        
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %                              CONTRAINTES
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %                              CONTRAINTES
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%            
+        
+        matrice_globale6 = @m_copy matrice_globale4
+        
+        
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %Relation lineaire des 2 noeuds d app de precontrainte
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
+        
+        Bettaz = Math.max( @m_get( matrice_globale6, (3*noeud.length-1), (3*noeud.length-1) ), @m_get( matrice_globale6, (@m_length(matrice_globale6)-1), (@m_length(matrice_globale6)-1) ) )
+
+        for i in [1 .. @m_length(matrice_globale5)]
+            if ( i != 3 * noeud.length-1 ) and ( i != @m_length(matrice_globale5)-1 )
+                for j in [ 1 .. @m_length(matrice_globale5)]
+                    if j == j == 3*noeud.length-1
+                        @m_set matrice_globale6, i, j, 0
+                    else if j == @m_length(matrice_globale5)-1
+                        @m_set matrice_globale6, i, j, ( @m_get( matrice_globale5, i, j ) + @m_get( matrice_globale5, i, (3*noeud.length-1) ) )
+                    else
+                        @m_set matrice_globale6, i, j, @m_get matrice_globale5, i, j        
+        
+            else if i == @m_length(matrice_globale5)-1
+                for j in [ 1 .. @m_length(matrice_globale5)]
+                    if j == j == 3*noeud.length-1
+                        @m_set matrice_globale6, i, j, 0
+                    else if j == @m_length(matrice_globale5)-1
+                        @m_set matrice_globale6, i, j, ( @m_get( matrice_globale5, i, j ) + @m_get( matrice_globale5, i, (3*noeud.length-1) ) + @m_get( matrice_globale5, (3*noeud.length-1), j) + @m_get( matrice_globale5, (3*noeud.length-1), (3*noeud.length-1) ) )
+                    else
+                        @m_set matrice_globale6, i, j, ( @m_get( matrice_globale5, i, j ) + @m_get( matrice_globale5, (3*noeud.length-1), j) )            
+        
+            else if i == 3 * noeud.length-1
+                for j in [ 1 .. @m_length(matrice_globale5)]
+                    if j == j == 3*noeud.length-1
+                        @m_set matrice_globale6, i, j, (-Bettaz)
+                    else if j == @m_length(matrice_globale5)-1
+                        @m_set matrice_globale6, i, j, Bettaz
+                    else
+                        @m_set matrice_globale6, i, j, 0
+                        
+                        
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %%%%%Initialisation effort et contact
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
+        
+        effort = math.zeros( @m_length(matrice_globale5), 1 )
+        
+        for i in [1 .. @m_length(matrice_globale5) ]
+            if ( i != 3 * noeud.length-1 ) and ( i != @m_length(matrice_globale5)-1 )
+                @m_set effort, i, 1, ( decal_noeuds * @m_get(matrice_globale5, i, (3 * noeud.length-1)) ) 
+            else if i == @m_length(matrice_globale5)-1
+                @m_set effort, i, 1, ( decal_noeuds * ( @m_get(matrice_globale5, i, (3 * noeud.length-1)) + @m_get( matrice_globale5, (3*noeud.length-1), (3*noeud.length-1)) ) ) 
+            else if i == 3 * noeud.length-1
+                @m_set effort, i, 1, Bettaz * decal_noeuds        
+        
+        effort1 = @app_charge(noeud,contact,contact_actif,Nombre_increments,Nombre_increments,effort,Pression,ForceAxiale,MomentOrthoRad,Angle_sect,D_int_plaque1,D_int_plaque2,angle_tube_incline1,angle_tube_incline2,h_plaque1,h_plaque2,wa1,wa2,wf1,wf2,wpression11,wpression12,wpression21,wpression22,winf,wsup)
+        effortinit = @v_copy effort1
+        matrice = @ajout_contact(matrice_globale6,contact_actif,k_contact,contact)
+        
+        #--------------------------------------
+        #    Tout ce qui est bloquage
+        #--------------------------------------
+        
+        effort1 = @m_pop_lin effort1, (3*(winf-1)+3)
+        effort1 = @m_pop_lin effort1, (3*(winf-1)+2)
+        effort1 = @m_pop_lin effort1, (3*(winf-1)+1)
+        
+        matrice = @m_pop_col matrice, (3*(winf-1)+3)
+        matrice = @m_pop_col matrice, (3*(winf-1)+2)
+        matrice = @m_pop_col matrice, (3*(winf-1)+1)
+        
+        matrice = @m_pop_lin matrice, (3*(winf-1)+3)
+        matrice = @m_pop_lin matrice, (3*(winf-1)+2)
+        matrice = @m_pop_lin matrice, (3*(winf-1)+1)
+        
+        effort1 = @m_pop_lin effort1, (3*(wsup-1)+1)
+        matrice = @m_pop_col matrice, (3*(wsup-1)+1)
+        matrice = @m_pop_lin matrice, (3*(wsup-1)+1)
+        
+
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #Resolution du systeme F=KU
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%
+        U = math.multiply( math.inv(matrice), effort1)
+        
+        #Rajout des points bloqués pour retrouver l'indexage initial
+        U = @m_push_lin U, (3*(wsup-1)), 0
+        U = @m_push_lin U, (3*(winf-1)), 0
+        U = @m_push_lin U, (3*(winf-1)+1), 0
+        U = @m_push_lin U, (3*(winf-1)+2), 0
+
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #Convergence contact et convergence pression
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        #Initialisation
+        contact_actif_next = []
+        for i in [1 .. contact.length]
+            if ( (@m_get(U, (3*contact[i-1].noeudmaitre-1), 1) < 0) and (@m_get(U, (3*contact[i-1].noeudesclave-1), 1) > 0) ) or ( @m_get(U, (3*contact[i-1].noeudmaitre-1), 1) - @m_get(U, (3*contact[i-1].noeudesclave-1), 1) <= epsiloncontact )
+                contact_actif_next.push i
+      
+        #Heredite
+        while sum2 != 0
+            while sum1 != 0
+                
+                contact_actif = contact_actif_next
+                matrice = @ajout_contact(matrice_globale6, contact_actif, k_contact, contact)
+                
+                matrice = @m_pop_lin matrice, (3*(winf-1)+3)
+                matrice = @m_pop_lin matrice, (3*(winf-1)+2)
+                matrice = @m_pop_lin matrice, (3*(winf-1)+1)
+                
+                matrice = @m_pop_col matrice, (3*(winf-1)+3)
+                matrice = @m_pop_col matrice, (3*(winf-1)+2)
+                matrice = @m_pop_col matrice, (3*(winf-1)+1)
+                
+                matrice = @m_pop_lin matrice, (3*(wsup-1)+1)
+                matrice = @m_pop_col matrice, (3*(wsup-1)+1)            
+
+                U = math.multiply( math.inv(matrice), effort1)
+
+                U = @m_push_lin U, (3*(wsup-1)), 0
+                U = @m_push_lin U, (3*(winf-1)), 0
+                U = @m_push_lin U, (3*(winf-1)), 0
+                U = @m_push_lin U, (3*(winf-1)), 0
+
+                contact_actif_next = []
+                for i in [1 .. contact.length]
+                    if ( @m_get(U, (3*contact[i-1].noeudmaitre-1), 1) < 0 and @m_get(U, (3*contact[i-1].noeudesclave-1), 1) > 0 ) or ( @m_get(U, (3*contact[i-1].noeudmaitre-1), 1) - @m_get(U, (3*contact[i-1].noeudesclave-1), 1) <= epsiloncontact )                
+                        contact_actif_next.push i
+                
+                sum1 = -1    
+                if contact_actif_next.length == contact_actif.length    
+                    sum1 = 0
+                    for i in [1 .. contact_actif_next.length]
+                        if contact_actif_next[i-1] != contact_actif[i-1]
+                            sum1 += 1
+
+            #Ici le contact a convergé donc contact _actif_next==contact _actif
+            # et la matrice est OK
+            #Maintenant nous connaissons le nouveau contact stable.
+            #Il y a donc peut etre un nouvel effort1 à prendre en compte 
+            effort1 = @app_charge(noeud,contact,contact_actif,Nombre_increments,Nombre_increments,effort,Pression,ForceAxiale,MomentOrthoRad,Angle_sect,D_int_plaque1,D_int_plaque2,angle_tube_incline1,angle_tube_incline2,h_plaque1,h_plaque2,wa1,wa2,wf1,wf2,wpression11,wpression12,wpression21,wpression22,winf,wsup)
+    
+            effort1 = @m_pop_lin effort1, (3*(winf-1)+3)
+            effort1 = @m_pop_lin effort1, (3*(winf-1)+2)
+            effort1 = @m_pop_lin effort1, (3*(winf-1)+1)    
+            
+            effort1 = @m_pop_lin effort1, (3*(wsup-1)+1)
+            
+            U = math.multiply( math.inv(matrice), effort1)
+
+            U = @m_push_lin U, (3*(wsup-1)), 0
+            U = @m_push_lin U, (3*(winf-1)), 0
+            U = @m_push_lin U, (3*(winf-1)), 0
+            U = @m_push_lin U, (3*(winf-1)), 0            
+
+            #Si l'effort1 n'a pas changé la solution non plus et contact actif next
+            #devrait etre aussi inchangé. Si c'est le cas la boucle se terminera
+            contact_actif_next = []
+            for i in [1 .. contact.length]
+                if ( @m_get(U, (3*contact[i-1].noeudmaitre-1), 1) < 0 and @m_get(U, (3*contact[i-1].noeudesclave-1), 1) > 0 ) or ( @m_get(U, (3*contact[i-1].noeudmaitre-1), 1) - @m_get(U, (3*contact[i-1].noeudesclave-1), 1) <= epsiloncontact )                
+                    contact_actif_next.push i            
+
+            sum2 = -1    
+            if contact_actif_next.length == contact_actif.length    
+                sum2 = 0
+                for i in [1 .. contact_actif_next.length]
+                    if contact_actif_next[i-1] != contact_actif[i-1]
+                        sum2 += 1        
+                
+        
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %%%Calcul des contraintes dans la vis :
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+  
+        dep2 = math.zeros(1,6)
+        @m_set dep2,1,1, (- @m_get(U, (@m_length(U)-7), 1)) 
+        @m_set dep2,1,2, (@m_get(U, (@m_length(U)-8), 1)) 
+        @m_set dep2,1,3, (- @m_get(U, (@m_length(U)-6), 1)) 
+        @m_set dep2,1,4, (- @m_get(U, (@m_length(U)-4), 1)) 
+        @m_set dep2,1,5, (@m_get(U, (@m_length(U)-5), 1)) 
+        @m_set dep2,1,6, (- @m_get(U, (@m_length(U)-3), 1)) 
+        
+        traction_vis2 = @m_get(U, (3*(noeud.length-1) - 1), 1) - @m_get(U, (3*noeud.length - 1), 1)
+        
+        #Calcul de F1r,F1z,M1 et de F2r,F2z et de M2
+        force = math.multiply(k_poutre, math.transpose(dep2))
+        
+        #Calcul des efforts, des moments et des contraintes
+        
+        @m_set Effort_axial,2,1, (- @m_get(force,1,1))
+        @m_set Sigma_axiale,2,1, (4 * @m_get(Effort_axial,2,1) / (Math.PI * Diametre_resultat * Diametre_resultat))
+        @m_set Moment_flexion,2,1, ( (@m_get(force,6,1) + @m_get(force,3,1)) / L_serree * hauteur_resultat - @m_get(force,3,1) )
+        @m_set Sigma_flexion,2,1, ( Math.abs( 32 * @m_get(Moment_flexion,2,1) / (Math.PI * Diametre_resultat * Diametre_resultat * Diametre_resultat)))
+        @m_set Sigma_totale,2,1, ( @m_get(Sigma_axiale,2,1) + @m_get(Sigma_flexion,2,1) )
+        @m_set Decollement_Rint,2,1, ( noeud[ contact[ Math.min.apply(Math, contact_actif) - 1].noeudmaitre - 1 ].r )
+        @m_set Decollement_Rext,2,1, ( noeud[ contact[ Math.max.apply(Math, contact_actif) - 1].noeudmaitre - 1 ].r )
+          
+        
+        # %%%%%%%
+        # %%PLOTS
+        # %%%%%%%
+        @U_pression = new Lst
+        for i in [ 1 .. @m_length(U)]
+            @U_pression.push @m_get(U, i, 1)        
+            
+            
+            
+            
+        
+# ===========================================================================================================================================================================
+
+    # %%%%%%%%%%%%%%%%%%%%%%%
+    # %Fonction ajout_contact
+    # %%%%%%%%%%%%%%%%%%%%%%%     
         
     ajout_contact : (matrice_ajout,contact_actif,k_contact,contact)->
 
@@ -313,3 +541,127 @@ class BrideICAResolve extends MatriceItem
             @m_set matrice, (3*noeud2-1), (3*noeud2-1), (@m_get(matrice, (3*noeud2-1), (3*noeud2-1)) + @m_get(k_ressort_global, 5, 5))
             
         return matrice
+
+
+    # %%%%%%%%%%%%%%%%%%%%
+    # %Fonction app_charge
+    # %%%%%%%%%%%%%%%%%%%%
+
+    app_charge : ( noeud, contact, contact_actif, l, Nombre_increments, effort, Pression, ForceAxiale, MomentOrthoRad, Angle_sect, D_int_plaque1, D_int_plaque2, angle_tube_incline1, angle_tube_incline2, h_plaque1, h_plaque2, wa1, wa2, wf1, wf2, wpression11, wpression12, wpression21, wpression22, winf, wsup ) ->
+        effort1 = @v_copy effort
+        
+        Pression = Pression / 1000000
+        
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %Forces toujours présentes quelque soit le contact
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
+        
+        #Force axiale appliquée au tube sup
+        @m_set effort1, (3*wsup-1), 1, ( @m_get( effort1, (3*wsup-1), 1) + ForceAxiale * l / Nombre_increments )
+        #Moment orthoradial appliqué à l'extrémité sup
+        @m_set effort1, (3*wsup), 1, ( @m_get( effort1, (3*wsup), 1) + MomentOrthoRad * l / Nombre_increments )
+        #Pression suivant R s'appliquant sur les deux premiers points
+        surf = D_int_plaque1 * Angle_sect * h_plaque1 / 2
+        forceu = surf * Pression * l / Nombre_increments
+        @m_set effort1, (3*wa1-2), 1, ( @m_get( effort1, (3*wa1-2), 1) + forceu )
+        surf = D_int_plaque2 * Angle_sect * h_plaque2 / 2
+        forceu = surf * Pression * l / Nombre_increments
+        @m_set effort1, (3*wa2-2), 1, ( @m_get( effort1, (3*wa2-2), 1) + forceu )        
+        
+        # # SUP
+        #Pression sur le petit bout intérieur de la plaque1
+        for k in [ wa1+1 .. wpression11 ]
+            surf = Math.abs((((noeud[k-1].r)*(noeud[k-1].r))-((noeud[k-2].r)*(noeud[k-2].r)))*Math.PI*Angle_sect/(2*Math.PI))
+            forcev = surf*Pression*l/Nombre_increments
+            @m_set effort1, (3*(k-1)-1), 1, ( @m_get( effort1, (3*(k-1)-1), 1) - forcev / 2 )
+            @m_set effort1, (3*(k-1)), 1, ( @m_get( effort1, (3*(k-1)), 1) - forcev / 2 )
+        
+        #Pression sur l interieur du tube incline 
+        for k in [ wpression12+1 .. wf1 ]
+            taille_r = Math.abs( noeud[k-1].r-noeud[k-2].r )
+            taille_z = Math.abs( noeud[k-1].z-noeud[k-2].z )
+            L = Math.sqrt( taille_r*taille_r + taille_z*taille_z )
+            surf = L*Angle_sect*noeud[k-2].r
+            forceu = Math.abs((surf*Pression*l/Nombre_increments)*@cosd(angle_tube_incline1))
+            forcev = Math.abs((surf*Pression*l/Nombre_increments)*@sind(angle_tube_incline1))
+            @m_set effort1, (3*(k-1)-2), 1, ( @m_get( effort1, (3*(k-1)-2), 1) - forceu / 2 )
+            @m_set effort1, (3*k-2), 1, ( @m_get( effort1, (3*k-2), 1) - forceu / 2 )
+            @m_set effort1, (3*(k-1)-1), 1, ( @m_get( effort1, (3*(k-1)-1), 1) - forcev / 2 )
+            @m_set effort1, (3*k-1), 1, ( @m_get( effort1, (3*k-1), 1) - forcev / 2 )            
+           
+        #Pression sur l interieur du tube
+        for k in [ wf1+1 .. wsup ]
+            surf = Math.abs(((noeud[k-1].z)-(noeud[k-2].z))*(noeud[k-2].r)*Angle_sect)
+            forceu = surf*Pression*l/Nombre_increments
+            @m_set effort1, (3*(k-1)-2), 1, ( @m_get( effort1, (3*(k-1)-2), 1) - forceu / 2 )
+            @m_set effort1, (3*k-2), 1, ( @m_get( effort1, (3*k-2), 1) - forceu / 2 )            
+
+        # # INF
+        #Pression sur le petit bout intérieur de la plaque2
+        for k in [ wa2+1 .. wpression21 ]
+            surf = Math.abs((((noeud[k-1].r)*(noeud[k-1].r))-((noeud[k-2].r)*(noeud[k-2].r)))*Math.PI*Angle_sect/(2*Math.PI))
+            forcev = surf*Pression*l/Nombre_increments
+            @m_set effort1, (3*(k-1)-1), 1, ( @m_get( effort1, (3*(k-1)-1), 1) - forcev / 2 )
+            @m_set effort1, (3*(k-1)), 1, ( @m_get( effort1, (3*(k-1)), 1) - forcev / 2 )
+
+        #Pression sur l interieur du tube incline 
+        for k in [ wpression22+1 .. wf2 ]
+            taille_r = Math.abs( noeud[k-1].r-noeud[k-2].r )
+            taille_z = Math.abs( noeud[k-1].z-noeud[k-2].z )
+            L = Math.sqrt( taille_r*taille_r + taille_z*taille_z )
+            surf = L*Angle_sect*noeud[k-2].r
+            forceu = Math.abs((surf*Pression*l/Nombre_increments)*@cosd(angle_tube_incline2))
+            forcev = Math.abs((surf*Pression*l/Nombre_increments)*@sind(angle_tube_incline2))
+            @m_set effort1, (3*(k-1)-2), 1, ( @m_get( effort1, (3*(k-1)-2), 1) - forceu / 2 )
+            @m_set effort1, (3*k-2), 1, ( @m_get( effort1, (3*k-2), 1) - forceu / 2 )
+            @m_set effort1, (3*(k-1)-1), 1, ( @m_get( effort1, (3*(k-1)-1), 1) - forcev / 2 )
+            @m_set effort1, (3*k-1), 1, ( @m_get( effort1, (3*k-1), 1) - forcev / 2 )  
+        
+        #Pression sur l interieur du tube
+        for k in [ wf2+1 .. winf ]
+            surf = Math.abs(((noeud[k-1].z)-(noeud[k-2].z))*(noeud[k-2].r)*Angle_sect)
+            forceu = surf*Pression*l/Nombre_increments
+            @m_set effort1, (3*(k-1)-2), 1, ( @m_get( effort1, (3*(k-1)-2), 1) - forceu / 2 )
+            @m_set effort1, (3*k-2), 1, ( @m_get( effort1, (3*k-2), 1) - forceu / 2 )     
+
+        #Eventuel chevauchement des plaques a l'interieur
+        if (D_int_plaque1 > D_int_plaque2) #Si linf dépasse de la sup
+            for k in [ wa2+1 .. contact[0].noeudesclave ]
+                surf = Math.abs((((noeud[k-1].r)*(noeud[k-1].r))-((noeud[k-2].r)*(noeud[k-2].r)))*Math.PI*Angle_sect/(2*Math.PI))
+                forcev = surf*Pression*l/Nombre_increments
+                @m_set effort1, (3*(k-1)-1), 1, ( @m_get( effort1, (3*(k-1)-1), 1) - forcev / 2 )
+                @m_set effort1, (3*k-1), 1, ( @m_get( effort1, (3*k-1), 1) - forcev / 2 )                 
+        else if (D_int_plaque1 < D_int_plaque2) #Si la sup dépasse de linf
+            for k in [ wa1+1 .. contact[0].noeudmaitre ]
+                surf = Math.abs((((noeud[k-1].r)*(noeud[k-1].r))-((noeud[k-2].r)*(noeud[k-2].r)))*Math.PI*Angle_sect/(2*Math.PI))
+                forcev = surf*Pression*l/Nombre_increments
+                @m_set effort1, (3*(k-1)-1), 1, ( @m_get( effort1, (3*(k-1)-1), 1) - forcev / 2 )
+                @m_set effort1, (3*k-1), 1, ( @m_get( effort1, (3*k-1), 1) - forcev / 2 )  
+
+
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #%%%%%%%%%%%%%%%%%%%%Forces dependantes du contact
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        # Si infiltration de la pression
+        
+        if (contact_actif.length == 0)
+            alert('LES DEUX PLAQUES SE SONT DECOLLEES => LES RESULTATS OBTENUS NE VEULENT RIEN DIRE !!!')
+        else
+            dernierdecollement = contact[ Math.min.apply(Math, contact_actif) - 1 ].noeudmaitre
+            if ( Math.min.apply(Math, contact_actif) > 1 )
+                for k in [ 2 .. dernierdecollement ]
+                    surf = Math.abs((((noeud[k-1].r)*(noeud[k-1].r))-((noeud[k-2].r)*(noeud[k-2].r)))*Math.PI*Angle_sect/(2*Math.PI))
+                    forcev = surf*Pression*l/Nombre_increments
+                    @m_set effort1, (3*(contact[k-1].noeudmaitre-1)-1), 1, ( @m_get( effort1, (3*(contact[k-1].noeudmaitre-1)-1), 1) - forcev / 2 )
+                    @m_set effort1, (3*contact[k-1].noeudmaitre-1), 1, ( @m_get( effort1, (3*contact[k-1].noeudmaitre-1), 1) - forcev / 2 )
+                    @m_set effort1, (3*(contact[k-1].noeudesclave-1)-1), 1, ( @m_get( effort1, (3*(contact[k-1].noeudesclave-1)-1), 1) - forcev / 2 )
+                    @m_set effort1, (3*contact[k-1].noeudesclave-1), 1, ( @m_get( effort1, (3*contact[k-1].noeudesclave-1), 1) - forcev / 2 )
+        
+        return effort1
+
+    cosd: ( a ) ->
+        return Math.cos(a*Math.PI/180)
+      
+    sind: ( a ) ->
+        return Math.sin(a*Math.PI/180)
